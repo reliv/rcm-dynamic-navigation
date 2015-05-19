@@ -1,0 +1,13 @@
+<div class="rcm-loading" ng-show="isLoading">
+    <!-- bootstrap style global loader -->
+    <link ng-href="{{cssUrl}}" rel="stylesheet" type="text/css" />
+
+    <div class="loading">
+        <div class="loading-container">
+            <div class="loading-content">
+                <span class="loading-indicator"></span>
+                <span class="loading-message"> {{loadingMessage}} {{loadingPercent}}</span>
+            </div>
+        </div>
+    </div>
+</div>

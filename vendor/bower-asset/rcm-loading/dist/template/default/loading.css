@@ -1,0 +1,81 @@
+.rcm-loading {
+    background-color: rgba(255,255,255,0);
+    position: fixed; top:0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50000; /* Just in case */
+}
+.rcm-loading .loading {
+    /*overflow: hidden;*/
+    padding-top: 15em;
+    position: fixed; left: 0;
+    width: 100%;
+}
+
+.rcm-loading .loading .loading-container {
+    float: left;
+    position: relative;
+    left: 50%;
+}
+
+.rcm-loading .loading .loading-content {
+    background-color: #FFFFFF;
+    float: left;
+    padding: .5em 1em;
+    position: relative; left: -50%;
+    border: 1px solid rgba(0,0,0,.10);
+    border-radius: .5em;
+    box-shadow: .2em .2em .1em rgba(0,0,0,.10);
+}
+
+.rcm-loading .loading .loading-indicator {
+    /* Bootstrap glyphicon */
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    -animation: spin .8s infinite linear;
+    -webkit-animation: spin2 .8s infinite linear;
+    -moz-animation: spin2 .8s linear infinite;
+}
+
+.rcm-loading .loading .loading-indicator:before {
+    /* Bootstrap glyphicon refresh */
+    display: inline-block;
+    content: "\e031";
+}
+
+.rcm-loading .loading .loading-message {
+    display: inline-block;
+}
+
+@-webkit-keyframes spin2 {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@-moz-keyframes spin2 {
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}

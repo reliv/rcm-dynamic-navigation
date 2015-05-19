@@ -1,0 +1,22 @@
+{
+    "name": "reliv/rcm-js-lib",
+    "description": "RCM Javascript Library - general utilities and services",
+    "type": "library",
+    "license": "BSD-3-Clause",
+    "keywords": [
+      "javascipt",
+      "eventmanager",
+      "GUID generator",
+      "library"
+    ],
+    "homepage": "https://github.com/reliv/rcm-js-lib",
+    "authors": [
+        {
+            "name": "James Jervis",
+            "email": "jjervis@relivinc.com",
+            "homepage": "https://github.com/reliv"
+        }
+    ],
+    "require": {},
+    "require-dev": {}
+}
