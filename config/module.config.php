@@ -57,11 +57,11 @@ return [
                 'modules/rcm-dynamic-navigation/' => __DIR__ . '/../public/',
             ],
             'collections' => [
-                'modules/rcm-admin/js/rcm-admin.js' => [
-                    'modules/rcm-dynamic-navigation/edit.js',
-                ],
                 'modules/rcm/modules.css' => [
                     'modules/rcm-dynamic-navigation/rcm-dynamic-navigation.css'
+                ],
+                'modules/rcm-admin/admin.js' => [
+                    'modules/rcm-dynamic-navigation/edit.js',
                 ],
             ],
         ],
