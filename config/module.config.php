@@ -60,7 +60,7 @@ return [
                 'modules/rcm-admin/js/rcm-admin.js' => [
                     'modules/rcm-dynamic-navigation/edit.js',
                 ],
-                'modules/rcm/plugins.css' => [
+                'modules/rcm/plugin.css' => [
                     'modules/rcm-dynamic-navigation/rcm-dynamic-navigation.css'
                 ],
             ],

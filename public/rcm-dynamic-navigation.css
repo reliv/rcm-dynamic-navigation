@@ -1,4 +1,8 @@
+/* <rcm-dynamic-navigation> */
+
 .RcmDynamicNavigation .HiddenLink
 {
     display: none;
 }
+
+/* </rcm-dynamic-navigation> */
