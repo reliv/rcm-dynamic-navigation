@@ -1,5 +1,5 @@
 /**
- * RcmNavigation
+ * RcmDynamicNavigation Edit
  *
  * JS for editing RcmNavigation
  *

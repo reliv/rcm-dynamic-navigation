@@ -1,3 +1,7 @@
+/**
+ * rcm-dynamic-navigation
+ * @type {{}}
+ */
 var globalRcmDynamicNavigationConfig = {};
 
 
