@@ -176,7 +176,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
     };
 
     me.addLoginLink = function(item) {
-        var menuBar = jQuery(me.containerSelector).find('nav').children('ul');
+        var menuBar = jQuery(me.containerSelector).find('nav').find('ul:first-child');
 
         if (menuBar.find(".rcmDynamicNavigationLogout").length > 0) {
             return;
