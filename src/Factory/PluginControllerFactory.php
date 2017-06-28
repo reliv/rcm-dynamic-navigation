@@ -1,26 +1,10 @@
 <?php
-/**
- * Service Factory for PluginController
- *
- * This file contains the factory needed to generate a PluginController.
- *
- * PHP version 5.4
- *
- * LICENSE: BSD
- *
- * @category  Reliv
- * @package   RcmDynamicNavigation
- * @author    Westin Shafer <wshafer@relivinc.com>
- * @copyright 2015 Reliv International
- * @license   License.txt New BSD License
- * @version   GIT: <git_id>
- * @link      https://github.com/reliv
- */
 
 namespace RcmDynamicNavigation\Factory;
 
+use Interop\Container\ContainerInterface;
 use RcmDynamicNavigation\Controller\PluginController;
-use Zend\ServiceManager\FactoryInterface;
+use Zend\Mvc\Controller\ControllerManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -36,32 +20,31 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * @version   Release: 1.0
  * @link      https://github.com/reliv
  */
-class PluginControllerFactory implements FactoryInterface
+class PluginControllerFactory
 {
     /**
-     * Create Service
+     * __invoke
      *
-     * @param ServiceLocatorInterface $controllerMgr Zend Controller Manager
+     * @param $container ContainerInterface|ServiceLocatorInterface|ControllerManager
      *
      * @return PluginController
      */
-    public function createService(ServiceLocatorInterface $controllerMgr)
+    public function __invoke($container)
     {
-        /** @var \Zend\Mvc\Controller\ControllerManager $cm For IDE */
-        $cm = $controllerMgr;
-
-        /** @var ServiceLocatorInterface $serviceLocator */
-        $serviceLocator = $cm->getServiceLocator();
+        // @BC for ZendFramework
+        if ($container instanceof ControllerManager) {
+            $container = $container->getServiceLocator();
+        }
 
         /** @var \Rcm\Acl\CmsPermissionChecks $cmsPermissionChecks */
-        $cmsPermissionChecks = $serviceLocator->get(
-            'Rcm\Acl\CmsPermissionsChecks'
+        $cmsPermissionChecks = $container->get(
+            \Rcm\Acl\CmsPermissionChecks::class
         );
 
         /** @var \Rcm\Entity\Site $currentSite */
-        $currentSite = $serviceLocator->get('Rcm\Service\CurrentSite');
+        $currentSite = $container->get(\Rcm\Service\CurrentSite::class);
 
-        $config = $serviceLocator->get('config');
+        $config = $container->get('config');
 
         return new PluginController(
             $cmsPermissionChecks,

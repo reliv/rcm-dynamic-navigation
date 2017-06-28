@@ -1,20 +1,5 @@
 <?php
-/**
- * Plugin Controller
- *
- * This is the main controller for this plugin
- *
- * PHP version 5.4
- *
- * LICENSE: No License yet
- *
- * @category  Reliv
- * @package   RcmDynamicNavigation
- * @author    Westin Shafer <wshafer@relivinc.com>
- * @copyright 2015 Reliv International
- * @license   License.txt New BSD License
- * @version   GIT: <git_id>
- */
+
 namespace RcmDynamicNavigation\Controller;
 
 use Rcm\Acl\CmsPermissionChecks;

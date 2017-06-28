@@ -1,21 +1,4 @@
 <?php
-/**
- * Nav link data model
- *
- * This file contains the nav link Data model for the Dynamic navigation plugin for the CMS
- *
- * PHP version 5.4
- *
- * LICENSE: No License yet
- *
- * @category  Reliv
- * @package   RcmDynamicNavigation
- * @author    Westin Shafer <wshafer@relivinc.com>
- * @copyright 2015 Reliv International
- * @license   License.txt New BSD License
- * @version   GIT: <git_id>
- * @link      http://github.com/reliv
- */
 
 namespace RcmDynamicNavigation\Model;
 
