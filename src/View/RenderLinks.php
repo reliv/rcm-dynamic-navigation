@@ -1,17 +1,4 @@
 <?php
-/**
- * Render Links
- * This file contains the render links view helper
- * PHP version 5.4
- * LICENSE: No License yet
- * @category  Reliv
- * @package   RcmDynamicNavigation
- * @author    Westin Shafer <wshafer@relivinc.com>
- * @copyright 2014 Reliv International
- * @license   License.txt New BSD License
- * @version   GIT: <git_id>
- * @link      http://github.com/reliv
- */
 
 namespace RcmDynamicNavigation\View;
 
@@ -34,7 +21,7 @@ class RenderLinks extends AbstractHelper
     /**
      * Render the links
      *
-     * @param Array $links Array of NavLinks
+     * @param array $links Array of NavLinks
      * @param boolean $admin Render in admin mode
      * @param string $id Id to pass to container
      *
@@ -48,7 +35,7 @@ class RenderLinks extends AbstractHelper
     /**
      * Render Method
      *
-     * @param Array $links Array of NavLinks
+     * @param array $links Array of NavLinks
      * @param boolean $admin Render in admin mode
      * @param string $id Id to pass to container
      *
@@ -84,7 +71,7 @@ class RenderLinks extends AbstractHelper
     /**
      * Get the UL container for links
      *
-     * @param Array $links Array of NavLinks
+     * @param array $links Array of NavLinks
      * @param boolean $admin Render in admin mode
      * @param string $id Id to pass to container
      *
@@ -169,6 +156,9 @@ class RenderLinks extends AbstractHelper
         return $html;
     }
 
+    /**
+     * @return string
+     */
     protected function getMobileMenu()
     {
         $html = '<div class="glyphicon glyphicon-menu-hamburger mobileMenuIcon" aria-hidden="true"></div>';

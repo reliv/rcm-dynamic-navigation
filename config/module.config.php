@@ -35,7 +35,7 @@ return [
 
     'view_helpers' => [
         'invokables' => [
-            'rcmDynamicLinksRenderLinks' => 'RcmDynamicNavigation\View\RenderLinks',
+            'rcmDynamicLinksRenderLinks' => \RcmDynamicNavigation\View\RenderLinks::class,
         ],
     ],
 
@@ -47,7 +47,7 @@ return [
 
     'controllers' => [
         'factories' => [
-            'RcmDynamicNavigation' => 'RcmDynamicNavigation\Factory\PluginControllerFactory',
+            'RcmDynamicNavigation' => \RcmDynamicNavigation\Factory\PluginControllerFactory::class,
         ]
     ],
 
