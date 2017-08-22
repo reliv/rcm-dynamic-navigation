@@ -140,7 +140,7 @@ class PluginController extends BaseController implements PluginInterface
      *
      * @return bool
      */
-    public function usersRoleHasPermissions(Array $permittedRoles)
+    public function usersRoleHasPermissions(array $permittedRoles)
     {
         if (empty($permittedRoles)) {
             return true;

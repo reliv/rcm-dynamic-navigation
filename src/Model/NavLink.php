@@ -47,7 +47,7 @@ class NavLink
      *
      * @param array|null $data Initial Data array to populate object with
      */
-    public function __construct(Array $data = null)
+    public function __construct(array $data = null)
     {
         if (!empty($data) && is_array($data)) {
             $this->populate($data);
@@ -61,7 +61,7 @@ class NavLink
      *
      * @return void
      */
-    public function populate(Array $data)
+    public function populate(array $data)
     {
         if (!empty($data['class'])) {
             $this->setClass($data['class']);
@@ -239,7 +239,7 @@ class NavLink
     /**
      * Get the link permissions
      *
-     * @return Array
+     * @return array
      */
     public function getPermissions()
     {
@@ -249,7 +249,7 @@ class NavLink
     /**
      * Set the permission for the link
      *
-     * @param string|Array $permissions Permissions
+     * @param string|array $permissions Permissions
      *
      * @return void
      */
@@ -300,7 +300,7 @@ class NavLink
      *
      * @return void
      */
-    public function setLinks(Array $links)
+    public function setLinks(array $links)
     {
         $this->links = array();
 
