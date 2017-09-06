@@ -67,7 +67,7 @@ return [
             => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserRolesFactory::class,
 
             \RcmDynamicNavigation\Api\Render\RenderLinks::class
-            => \RcmDynamicNavigation\Api\Render\RenderLinksFactory::class
+            => \RcmDynamicNavigation\Api\Render\RenderLinksDefaultFactory::class
         ],
     ],
 

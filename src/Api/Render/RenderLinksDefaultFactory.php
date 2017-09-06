@@ -7,15 +7,15 @@ use Psr\Container\ContainerInterface;
 /**
  * @author James Jervis - https://github.com/jerv13
  */
-class RenderLinksFactory
+class RenderLinksDefaultFactory
 {
     /**
      * @param ContainerInterface $serviceContainer
      *
-     * @return RenderLinks
+     * @return RenderLinksDefault
      */
     public function __invoke($serviceContainer)
     {
-        return new RenderLinks();
+        return new RenderLinksDefault();
     }
 }
