@@ -2,11 +2,14 @@
 
 namespace RcmDynamicNavigation\Controller;
 
-use Rcm\Acl\CmsPermissionChecks;
-use Rcm\Entity\Site;
-use Rcm\Plugin\PluginInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Rcm\Plugin\BaseController;
+use Rcm\Plugin\PluginInterface;
+use RcmDynamicNavigation\Api\Acl\IsAllowedAdmin;
+use RcmDynamicNavigation\Api\Acl\IsAllowedIfLoggedIn;
+use RcmDynamicNavigation\Api\Acl\IsAllowedRoles;
 use RcmDynamicNavigation\Model\NavLink;
+use Zend\Diactoros\ServerRequestFactory;
 
 /**
  * Plugin Controller
@@ -23,26 +26,37 @@ use RcmDynamicNavigation\Model\NavLink;
  */
 class PluginController extends BaseController implements PluginInterface
 {
-    /** @var CmsPermissionChecks */
-    protected $permissionChecks;
-
-    /** @var Site */
-    protected $currentSite;
+    /**
+     * @var IsAllowedAdmin
+     */
+    protected $isAllowedAdmin;
 
     /**
-     * Constructor
-     *
-     * @param CmsPermissionChecks $permissionChecks CmsPermission service
-     * @param Site                $currentSite      Current site needed for permissions checks
-     * @param null                $config           System config
+     * @var IsAllowedRoles
+     */
+    protected $isAllowedRoles;
+
+    /**
+     * @var IsAllowedIfLoggedIn
+     */
+    protected $isAllowedIfLoggedIn;
+
+    /**
+     * @param IsAllowedAdmin      $isAllowedAdmin
+     * @param IsAllowedRoles      $isAllowedRoles
+     * @param IsAllowedIfLoggedIn $isAllowedIfLoggedIn
+     * @param                     $config
      */
     public function __construct(
-        CmsPermissionChecks $permissionChecks,
-        Site $currentSite,
+        IsAllowedAdmin $isAllowedAdmin,
+        IsAllowedIfLoggedIn $isAllowedIfLoggedIn,
+        IsAllowedRoles $isAllowedRoles,
         $config
     ) {
-        $this->permissionChecks = $permissionChecks;
-        $this->currentSite = $currentSite;
+        $this->isAllowedAdmin = $isAllowedAdmin;
+        $this->isAllowedIfLoggedIn = $isAllowedIfLoggedIn;
+        $this->isAllowedRoles = $isAllowedRoles;
+
         parent::__construct($config, 'RcmDynamicNavigation');
     }
 
@@ -64,7 +78,9 @@ class PluginController extends BaseController implements PluginInterface
             }
         }
 
-        $this->checkLinks($links);
+        $request = ServerRequestFactory::fromGlobals();
+
+        $this->checkLinks($request, $links);
 
         $view = parent::renderInstance(
             $instanceId,
@@ -72,19 +88,28 @@ class PluginController extends BaseController implements PluginInterface
         );
 
         $view->setVariable('links', $links);
-        $view->setVariable('isAdmin', $this->permissionChecks->siteAdminCheck($this->currentSite));
+        $view->setVariable('isAdmin', $this->isAllowedAdmin->__invoke($request));
+
         return $view;
     }
 
     /**
      * Check the links for display
      *
-     * @param Array $links Array of links to check
+     * @param array $links Array of links to check
      *
      * @return void
      */
-    public function checkLinks(&$links)
-    {
+    /**
+     * @param ServerRequestInterface $request
+     * @param NavLink[]              $links
+     *
+     * @return void
+     */
+    protected function checkLinks(
+        ServerRequestInterface $request,
+        array &$links
+    ) {
         if (empty($links)) {
             return;
         }
@@ -94,13 +119,13 @@ class PluginController extends BaseController implements PluginInterface
          * @var NavLink $link
          */
         foreach ($links as $index => $link) {
-            if (!$this->checkLink($link)) {
+            if (!$this->checkLink($request, $link)) {
                 unset($links[$index]);
             }
 
             if ($link->hasLinks()) {
                 $subLinks = $link->getLinks();
-                $this->checkLinks($subLinks);
+                $this->checkLinks($request, $subLinks);
                 $link->setLinks($subLinks);
             }
         }
@@ -109,18 +134,28 @@ class PluginController extends BaseController implements PluginInterface
     /**
      * Check an individual link
      *
-     * @param NavLink $link Link to check
+     * @param ServerRequestInterface $request
+     * @param NavLink                $link
      *
      * @return bool
      */
-    public function checkLink(NavLink $link)
-    {
-        $siteAdmin = $this->permissionChecks->siteAdminCheck($this->currentSite);
-        $userHasPermissions = $this->usersRoleHasPermissions($link->getPermissions());
+    protected function checkLink(
+        ServerRequestInterface $request,
+        NavLink $link
+    ) {
+        $siteAdmin = $this->isAllowedAdmin->__invoke($request);
+        $userHasPermissions = $this->isAllowedRoles->__invoke(
+            $request,
+            [IsAllowedRoles::OPTION_PERMITTED_ROLES => $link->getPermissions()]
+        );
 
-        if ($link->isLoginLink() && $this->permissionChecks->isCurrentUserLoggedIn()) {
+        $userIsLoggedIn = $this->isAllowedIfLoggedIn->__invoke(
+            $request
+        );
+
+        if ($link->isLoginLink() && $userIsLoggedIn) {
             $link->addSystemClass('HiddenLink');
-        } elseif ($link->isLogoutLink() && !$this->permissionChecks->isCurrentUserLoggedIn()) {
+        } elseif ($link->isLogoutLink() && !$userIsLoggedIn) {
             $link->addSystemClass('HiddenLink');
         } elseif ($siteAdmin && !$userHasPermissions) {
             $link->addSystemClass('HiddenLink');
@@ -128,28 +163,6 @@ class PluginController extends BaseController implements PluginInterface
 
         if ($siteAdmin || $userHasPermissions) {
             return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Does the user have permissions to see this link?
-     *
-     * @param array $permittedRoles Roles to check
-     *
-     * @return bool
-     */
-    public function usersRoleHasPermissions(array $permittedRoles)
-    {
-        if (empty($permittedRoles)) {
-            return true;
-        }
-
-        foreach ($permittedRoles as $role) {
-            if ($this->permissionChecks->hasRoleBasedAccess($role)) {
-                return true;
-            }
         }
 
         return false;

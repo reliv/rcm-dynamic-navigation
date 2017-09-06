@@ -18,6 +18,7 @@ class ModuleConfig
 
         return [
             'asset_manager' => $config['asset_manager'],
+            'dependencies' => $config['service_manager'],
             'rcmPlugin' => $config['rcmPlugin'],
         ];
     }
