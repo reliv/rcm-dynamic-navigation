@@ -39,7 +39,7 @@ return [
 
     'controllers' => [
         'factories' => [
-            'RcmDynamicNavigation' => \RcmDynamicNavigation\Factory\PluginControllerFactory::class,
+            'RcmDynamicNavigation' => \RcmDynamicNavigation\Controller\PluginControllerFactory::class,
         ]
     ],
 
@@ -49,15 +49,31 @@ return [
             'display' => 'Dynamic Navigation Menu',
             'tooltip' => 'An editable navigation menu',
             'icon' => '',
-            'canCache'=> false,
+            'canCache' => false,
             'editJs' => '/modules/rcm-dynamic-navigation/edit.js',
             'defaultInstanceConfig' => include __DIR__ . '/defaultInstanceConfig.php'
         ],
     ],
 
+    'service_manager' => [
+        'factories' => [
+            \RcmDynamicNavigation\Api\Acl\IsAllowedAdmin::class
+            => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserSiteAdminFactory::class,
+
+            \RcmDynamicNavigation\Api\Acl\IsAllowedIfLoggedIn::class
+            => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserIfLoggedInFactory::class,
+
+            \RcmDynamicNavigation\Api\Acl\IsAllowedRoles::class
+            => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserRolesFactory::class,
+
+            \RcmDynamicNavigation\Api\Render\RenderLinks::class
+            => \RcmDynamicNavigation\Api\Render\RenderLinksDefaultFactory::class
+        ],
+    ],
+
     'view_helpers' => [
-        'invokables' => [
-            'rcmDynamicLinksRenderLinks' => \RcmDynamicNavigation\View\RenderLinks::class,
+        'factories' => [
+            'rcmDynamicLinksRenderLinks' => \RcmDynamicNavigation\View\RenderLinksFactory::class,
         ],
     ],
 
