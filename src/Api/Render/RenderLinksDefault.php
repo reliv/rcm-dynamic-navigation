@@ -10,9 +10,6 @@ use RcmDynamicNavigation\Model\NavLink;
  */
 class RenderLinksDefault implements RenderLinks
 {
-    const OPTION_ADMIN_MODE = 'adminMode';
-    const OPTION_ID = 'id';
-
     /**
      * @param ServerRequestInterface $request
      * @param NavLink[]              $links
