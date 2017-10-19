@@ -25,10 +25,10 @@ class NavLink
     protected $href;
 
     /** @var array  */
-    protected $class = array();
+    protected $class = [];
 
     /** @var array  */
-    protected $systemClass = array();
+    protected $systemClass = [];
 
     /** @var string */
     protected $target;
@@ -37,10 +37,10 @@ class NavLink
     protected $display;
 
     /** @var array  */
-    protected $permissions = array();
+    protected $permissions = [];
 
     /** @var array  */
-    protected $links = array();
+    protected $links = [];
 
     /**
      * Constructor
@@ -129,7 +129,7 @@ class NavLink
      */
     public function setClass($class)
     {
-        $this->class = array();
+        $this->class = [];
 
         $classes = explode(" ", $class);
 
@@ -171,7 +171,7 @@ class NavLink
      */
     public function setSystemClass($class)
     {
-        $this->systemClass = array();
+        $this->systemClass = [];
 
         $classes = explode(" ", $class);
 
@@ -260,11 +260,11 @@ class NavLink
             return;
         }
 
-        $this->permissions = array();
+        $this->permissions = [];
 
         $permissionsArray = explode(',', $permissions);
 
-        foreach ($permissionsArray as &$permissionItem) {
+        foreach ($permissionsArray as $permissionItem) {
             $this->addPermission($permissionItem);
         }
     }
@@ -302,7 +302,7 @@ class NavLink
      */
     public function setLinks(array $links)
     {
-        $this->links = array();
+        $this->links = [];
 
         foreach ($links as &$link) {
             $this->addLink($link);

@@ -70,7 +70,7 @@ class PluginController extends BaseController implements PluginInterface
      */
     public function renderInstance($instanceId, $instanceConfig)
     {
-        $links = array();
+        $links = [];
 
         if (!empty($instanceConfig['links']) && is_array($instanceConfig['links'])) {
             foreach ($instanceConfig['links'] as $link) {
@@ -80,14 +80,14 @@ class PluginController extends BaseController implements PluginInterface
 
         $request = ServerRequestFactory::fromGlobals();
 
-        $this->checkLinks($request, $links);
+        $allowedLinks = $this->getAllowedLinks($request, $links);
 
         $view = parent::renderInstance(
             $instanceId,
             $instanceConfig
         );
 
-        $view->setVariable('links', $links);
+        $view->setVariable('links', $allowedLinks);
         $view->setVariable('isAdmin', $this->isAllowedAdmin->__invoke($request));
 
         return $view;
@@ -104,31 +104,40 @@ class PluginController extends BaseController implements PluginInterface
      * @param ServerRequestInterface $request
      * @param NavLink[]              $links
      *
-     * @return void
+     * @return NavLink[]
      */
-    protected function checkLinks(
+    protected function getAllowedLinks(
         ServerRequestInterface $request,
-        array &$links
+        array $links
     ) {
         if (empty($links)) {
-            return;
+            return [];
         }
+
+        $allowedLinks = [];
 
         /**
          * @var integer $index
          * @var NavLink $link
          */
         foreach ($links as $index => $link) {
-            if (!$this->checkLink($request, $link)) {
-                unset($links[$index]);
+            if (!$this->isLinkAllowed($request, $link)) {
+                continue;
             }
 
+            $allowedLinks[] = $link;
+
             if ($link->hasLinks()) {
-                $subLinks = $link->getLinks();
-                $this->checkLinks($request, $subLinks);
-                $link->setLinks($subLinks);
+                $allowedSubLinks = $this->getAllowedLinks(
+                    $request,
+                    $link->getLinks()
+                );
+
+                $link->setLinks($allowedSubLinks);
             }
         }
+
+        return $allowedLinks;
     }
 
     /**
@@ -139,7 +148,7 @@ class PluginController extends BaseController implements PluginInterface
      *
      * @return bool
      */
-    protected function checkLink(
+    protected function isLinkAllowed(
         ServerRequestInterface $request,
         NavLink $link
     ) {
