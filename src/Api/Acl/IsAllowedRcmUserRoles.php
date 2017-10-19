@@ -34,8 +34,7 @@ class IsAllowedRcmUserRoles implements IsAllowedRoles
     public function __invoke(
         ServerRequestInterface $request,
         array $options = []
-    ): bool
-    {
+    ): bool {
         $permittedRoles = [];
         if (array_key_exists(IsAllowedRoles::OPTION_PERMITTED_ROLES, $options)) {
             $permittedRoles = $options[IsAllowedRoles::OPTION_PERMITTED_ROLES];

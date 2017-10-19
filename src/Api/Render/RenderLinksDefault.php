@@ -22,8 +22,7 @@ class RenderLinksDefault implements RenderLinks
         ServerRequestInterface $request,
         array $links,
         array $options = []
-    ): string
-    {
+    ): string {
         $adminMode = (array_key_exists(self::OPTION_ADMIN_MODE, $options) ? $options[self::OPTION_ADMIN_MODE] : false);
 
         if (!array_key_exists(self::OPTION_ID, $options)) {
