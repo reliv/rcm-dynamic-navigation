@@ -7,10 +7,6 @@ namespace RcmDynamicNavigation\Model;
  */
 class NavLink
 {
-    const LOGIN_CLASS = 'rcmDynamicNavigationLogin';
-    const LOGOUT_CLASS = 'rcmDynamicNavigationLogout';
-    const LOGIN_MAIN_CLASS = 'rcmDynamicNavigationAuthMenuItem';
-
     /** @var string */
     protected $display;
 

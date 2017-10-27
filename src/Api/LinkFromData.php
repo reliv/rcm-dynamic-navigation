@@ -9,6 +9,10 @@ use RcmDynamicNavigation\Model\NavLink;
  */
 class LinkFromData
 {
+    const LOGIN_CLASS = 'rcmDynamicNavigationLogin';
+    const LOGOUT_CLASS = 'rcmDynamicNavigationLogout';
+    const LOGIN_MAIN_CLASS = 'rcmDynamicNavigationAuthMenuItem';
+    
     /**
      * @param array $linkData
      *
@@ -102,6 +106,7 @@ class LinkFromData
      */
     protected static function buildBcLogOutServiceOptions(array $linkData)
     {
+        // $linkData['class']  'rcmDynamicNavigationLogin';
         if ($linkData['href'] == '/login?logout=1') {
             $linkData['renderService'] = 'log-out';
             $linkData['isAllowedService'] = 'show-if-logged-in';
@@ -117,11 +122,45 @@ class LinkFromData
      */
     protected static function buildBcLogInServiceOptions(array $linkData)
     {
+        // $linkData['class']  'rcmDynamicNavigationLogin';
         if ($linkData['href'] == '/login') {
             $linkData['renderService'] = 'log-in';
             $linkData['isAllowedService'] = 'show-if-not-logged-in';
         }
 
         return $linkData;
+    }
+
+    // @todo
+    /**
+     * Is this a login link?
+     *
+     * @return bool
+     */
+    public function isLoginLink()
+    {
+        $class = $this->getClass();
+
+        if (strpos($class, self::LOGIN_CLASS) === false) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Is this a logout link?
+     *
+     * @return bool
+     */
+    public function isLogoutLink()
+    {
+        $class = $this->getClass();
+
+        if (strpos($class, self::LOGOUT_CLASS) === false) {
+            return false;
+        }
+
+        return true;
     }
 }
