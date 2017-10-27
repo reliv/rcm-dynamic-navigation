@@ -62,11 +62,6 @@ return [
                     'service' => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserIfNotLoggedIn::class,
                     'options' => [],
                 ],
-                'show-if-admin' => [
-                    'displayName' => 'Show link if admin is logged in',
-                    'service' => \RcmDynamicNavigation\Api\Acl\IsAllowedAdmin::class,
-                    'options' => [],
-                ],
                 'show-if-has-access-role' => [
                     'displayName' => 'Show link if user has access role',
                     'service' => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserRoles::class,
