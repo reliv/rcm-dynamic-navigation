@@ -8,7 +8,7 @@ use RcmUser\Api\Authentication\GetIdentity;
 /**
  * @author James Jervis - https://github.com/jerv13
  */
-class IsAllowedRcmUserIfLoggedIn implements IsAllowedIfLoggedIn
+class IsAllowedRcmUserIfNotLoggedIn implements IsAllowedIfLoggedIn
 {
     /**
      * @var GetIdentity
@@ -34,11 +34,12 @@ class IsAllowedRcmUserIfLoggedIn implements IsAllowedIfLoggedIn
     public function __invoke(
         ServerRequestInterface $request,
         array $options = []
-    ): bool {
+    ): bool
+    {
         $currentUser = $this->getIdentity->__invoke(
             $request
         );
 
-        return !empty($currentUser);
+        return empty($currentUser);
     }
 }

@@ -5,24 +5,16 @@ namespace RcmDynamicNavigation\Controller;
 use Psr\Http\Message\ServerRequestInterface;
 use Rcm\Plugin\BaseController;
 use Rcm\Plugin\PluginInterface;
+use RcmDynamicNavigation\Api\Acl\IsAllowed;
 use RcmDynamicNavigation\Api\Acl\IsAllowedAdmin;
-use RcmDynamicNavigation\Api\Acl\IsAllowedIfLoggedIn;
-use RcmDynamicNavigation\Api\Acl\IsAllowedRoles;
+use RcmDynamicNavigation\Api\GetIsAllowedServiceConfig;
+use RcmDynamicNavigation\Api\LinksFromData;
+use RcmDynamicNavigation\Api\Options;
 use RcmDynamicNavigation\Model\NavLink;
 use Zend\Diactoros\ServerRequestFactory;
 
 /**
- * Plugin Controller
- *
- * This is the main controller for this plugin
- *
- * @category  Reliv
- * @package   RcmDynamicNavigation
- * @author    Westin Shafer <wshafer@relivinc.com>
- * @copyright 2015 Reliv International
- * @license   License.txt New BSD License
- * @version   Release: 1.0
- * @link      http://github.com/reliv
+ * @author James Jervis - https://github.com/jerv13
  */
 class PluginController extends BaseController implements PluginInterface
 {
@@ -30,32 +22,20 @@ class PluginController extends BaseController implements PluginInterface
      * @var IsAllowedAdmin
      */
     protected $isAllowedAdmin;
+    protected $getIsAllowedServiceConfig;
 
     /**
-     * @var IsAllowedRoles
-     */
-    protected $isAllowedRoles;
-
-    /**
-     * @var IsAllowedIfLoggedIn
-     */
-    protected $isAllowedIfLoggedIn;
-
-    /**
-     * @param IsAllowedAdmin      $isAllowedAdmin
-     * @param IsAllowedRoles      $isAllowedRoles
-     * @param IsAllowedIfLoggedIn $isAllowedIfLoggedIn
-     * @param                     $config
+     * @param IsAllowedAdmin            $isAllowedAdmin
+     * @param GetIsAllowedServiceConfig $getIsAllowedServiceConfig
+     * @param array                     $config
      */
     public function __construct(
         IsAllowedAdmin $isAllowedAdmin,
-        IsAllowedIfLoggedIn $isAllowedIfLoggedIn,
-        IsAllowedRoles $isAllowedRoles,
+        GetIsAllowedServiceConfig $getIsAllowedServiceConfig,
         $config
     ) {
         $this->isAllowedAdmin = $isAllowedAdmin;
-        $this->isAllowedIfLoggedIn = $isAllowedIfLoggedIn;
-        $this->isAllowedRoles = $isAllowedRoles;
+        $this->getIsAllowedServiceConfig = $getIsAllowedServiceConfig;
 
         parent::__construct($config, 'RcmDynamicNavigation');
     }
@@ -70,17 +50,11 @@ class PluginController extends BaseController implements PluginInterface
      */
     public function renderInstance($instanceId, $instanceConfig)
     {
-        $links = [];
-
-        if (!empty($instanceConfig['links']) && is_array($instanceConfig['links'])) {
-            foreach ($instanceConfig['links'] as $link) {
-                $links[] = new NavLink($link);
-            }
-        }
+        $links = LinksFromData::invoke($instanceConfig['links']);
 
         $request = ServerRequestFactory::fromGlobals();
 
-        $allowedLinks = $this->getAllowedLinks($request, $links);
+        $allowedLinks = $this->filterAllowedLinks($request, $links);
 
         $view = parent::renderInstance(
             $instanceId,
@@ -94,24 +68,22 @@ class PluginController extends BaseController implements PluginInterface
     }
 
     /**
-     * Check the links for display
-     *
-     * @param array $links Array of links to check
-     *
-     * @return void
-     */
-    /**
      * @param ServerRequestInterface $request
-     * @param NavLink[]              $links
+     * @param array                  $links
      *
-     * @return NavLink[]
+     * @return array
      */
-    protected function getAllowedLinks(
+    protected function filterAllowedLinks(
         ServerRequestInterface $request,
         array $links
     ) {
         if (empty($links)) {
             return [];
+        }
+
+        // no restrictions for admin
+        if ($this->isAllowedAdmin->__invoke($request)) {
+            return $links;
         }
 
         $allowedLinks = [];
@@ -128,7 +100,7 @@ class PluginController extends BaseController implements PluginInterface
             $allowedLinks[] = $link;
 
             if ($link->hasLinks()) {
-                $allowedSubLinks = $this->getAllowedLinks(
+                $allowedSubLinks = $this->filterAllowedLinks(
                     $request,
                     $link->getLinks()
                 );
@@ -152,28 +124,27 @@ class PluginController extends BaseController implements PluginInterface
         ServerRequestInterface $request,
         NavLink $link
     ) {
-        $siteAdmin = $this->isAllowedAdmin->__invoke($request);
-        $userHasPermissions = $this->isAllowedRoles->__invoke(
+        $serviceContainer = $this->getServiceLocator();
+
+        $isAllowedServiceAlias = $link->getIsAllowedService();
+
+        $isAllowedServiceConfig = $this->getIsAllowedServiceConfig->__invoke(
+            $isAllowedServiceAlias
+        );
+
+        $isAllowedServiceName = Options::getRequired(
+            $isAllowedServiceConfig,
+            'service'
+        );
+
+        $isAllowedServiceOptions = $link->getIsAllowedServiceOptions();
+
+        /** @var IsAllowed $isAllowedService */
+        $isAllowedService = $serviceContainer->get($isAllowedServiceName);
+
+        return $isAllowedService->__invoke(
             $request,
-            [IsAllowedRoles::OPTION_PERMITTED_ROLES => $link->getPermissions()]
+            $isAllowedServiceOptions
         );
-
-        $userIsLoggedIn = $this->isAllowedIfLoggedIn->__invoke(
-            $request
-        );
-
-        if ($link->isLoginLink() && $userIsLoggedIn) {
-            $link->addSystemClass('HiddenLink');
-        } elseif ($link->isLogoutLink() && !$userIsLoggedIn) {
-            $link->addSystemClass('HiddenLink');
-        } elseif ($siteAdmin && !$userHasPermissions) {
-            $link->addSystemClass('HiddenLink');
-        }
-
-        if ($siteAdmin || $userHasPermissions) {
-            return true;
-        }
-
-        return false;
     }
 }

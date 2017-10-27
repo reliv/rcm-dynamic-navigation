@@ -6,17 +6,19 @@ use Psr\Http\Message\ServerRequestInterface;
 use Rcm\Acl\ResourceName;
 use Rcm\Api\GetSiteByRequest;
 use Rcm\Entity\Site;
-use RcmUser\Service\RcmUserService;
+use RcmUser\Api\Acl\IsAllowed;
 
 /**
  * @author James Jervis - https://github.com/jerv13
  */
 class IsAllowedRcmUserSiteAdmin implements IsAllowedAdmin
 {
+    const DEFAULT_PRIVILEGE = 'admin';
+
     /**
-     * @var RcmUserService
+     * @var IsAllowed
      */
-    protected $rcmUserService;
+    protected $isAllowed;
 
     /**
      * @var GetSiteByRequest
@@ -29,18 +31,26 @@ class IsAllowedRcmUserSiteAdmin implements IsAllowedAdmin
     protected $resourceName;
 
     /**
-     * @param RcmUserService   $rcmUserService
+     * @var string
+     */
+    protected $privilege = self::DEFAULT_PRIVILEGE;
+
+    /**
+     * @param IsAllowed        $isAllowed
      * @param GetSiteByRequest $getSiteByRequest
      * @param ResourceName     $resourceName
+     * @param string           $privilege
      */
     public function __construct(
-        RcmUserService $rcmUserService,
+        IsAllowed $isAllowed,
         GetSiteByRequest $getSiteByRequest,
-        ResourceName $resourceName
+        ResourceName $resourceName,
+        string $privilege = self::DEFAULT_PRIVILEGE
     ) {
-        $this->rcmUserService = $rcmUserService;
+        $this->isAllowed = $isAllowed;
         $this->getSiteByRequest = $getSiteByRequest;
         $this->resourceName = $resourceName;
+        $this->privilege = $privilege;
     }
 
     /**
@@ -53,7 +63,8 @@ class IsAllowedRcmUserSiteAdmin implements IsAllowedAdmin
     public function __invoke(
         ServerRequestInterface $request,
         array $options = []
-    ): bool {
+    ): bool
+    {
         /** @var Site $site */
         $site = $this->getSiteByRequest->__invoke(
             $request
@@ -63,12 +74,13 @@ class IsAllowedRcmUserSiteAdmin implements IsAllowedAdmin
             return false;
         }
 
-        return $this->rcmUserService->isAllowed(
+        return $this->isAllowed->__invoke(
+            $request,
             $this->resourceName->get(
                 ResourceName::RESOURCE_SITES,
                 $site->getSiteId()
             ),
-            'admin'
+            $this->privilege
         );
     }
 }

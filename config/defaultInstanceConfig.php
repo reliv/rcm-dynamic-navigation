@@ -19,5 +19,18 @@ return [
             'display' => 'Untitled Link',
             'href' => "#",
         ],
-    ]
+        /* EXAMPLE
+        0 => [
+            'display' => '',
+            'href' => '',
+            'class' => '',
+            'target' => '',
+            'links' => [],
+            'renderService' => 'default',
+            'renderServiceOptions' => [],
+            'isAllowedService' => 'default',
+            'isAllowedServiceOptions' => [],
+        ],
+        */
+    ],
 ];

@@ -3,6 +3,8 @@
 namespace RcmDynamicNavigation\Api\Acl;
 
 use Psr\Http\Message\ServerRequestInterface;
+use RcmDynamicNavigation\Api\Options;
+use RcmUser\Api\Acl\HasRoleBasedAccess;
 use RcmUser\Service\RcmUserService;
 
 /**
@@ -11,17 +13,17 @@ use RcmUser\Service\RcmUserService;
 class IsAllowedRcmUserRoles implements IsAllowedRoles
 {
     /**
-     * @var RcmUserService
+     * @var HasRoleBasedAccess
      */
-    protected $rcmUserService;
+    protected $hasRoleBasedAccess;
 
     /**
-     * @param RcmUserService $rcmUserService
+     * @param HasRoleBasedAccess $hasRoleBasedAccess
      */
     public function __construct(
-        RcmUserService $rcmUserService
+        HasRoleBasedAccess $hasRoleBasedAccess
     ) {
-        $this->rcmUserService = $rcmUserService;
+        $this->hasRoleBasedAccess = $hasRoleBasedAccess;
     }
 
     /**
@@ -35,17 +37,18 @@ class IsAllowedRcmUserRoles implements IsAllowedRoles
         ServerRequestInterface $request,
         array $options = []
     ): bool {
-        $permittedRoles = [];
-        if (array_key_exists(IsAllowedRoles::OPTION_PERMITTED_ROLES, $options)) {
-            $permittedRoles = $options[IsAllowedRoles::OPTION_PERMITTED_ROLES];
-        }
+        $permittedRoles = Options::get(
+            $options,
+            IsAllowedRoles::OPTION_PERMITTED_ROLES,
+            []
+        );
 
         if (empty($permittedRoles)) {
             return true;
         }
 
         foreach ($permittedRoles as $role) {
-            if ($this->rcmUserService->hasRoleBasedAccess($role)) {
+            if ($this->hasRoleBasedAccess->__invoke($request, $role)) {
                 return true;
             }
         }
