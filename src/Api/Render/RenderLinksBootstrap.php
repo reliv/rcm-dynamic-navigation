@@ -41,34 +41,43 @@ class RenderLinksBootstrap implements RenderLinks
         array $options = []
     ): string
     {
-        $adminMode = (array_key_exists(self::OPTION_ADMIN_MODE, $options) ? $options[self::OPTION_ADMIN_MODE] : false);
+        $adminMode = Options::get(
+            $options,
+            self::OPTION_ADMIN_MODE,
+            false
+        );
 
-        if (!array_key_exists(self::OPTION_ID, $options)) {
-            throw new \Exception('Option is required: ' . self::OPTION_ID);
-        }
+        $depth = Options::get(
+            $options,
+            self::OPTION_DEPTH,
+            self::DEFAULT_DEPTH
+        );
 
-        $id = $options[self::OPTION_ID];
+        $id = Options::getRequired(
+            $options,
+            self::OPTION_ID
+        );
 
         return $this->render(
             $request,
             $links,
-            $adminMode,
+            $depth,
             $id
         );
     }
 
     /**
      * @param ServerRequestInterface $request
-     * @param NavLink[]              $links     Array of NavLinks
-     * @param boolean                $adminMode Render in admin mode
-     * @param string                 $id        Id to pass to container
+     * @param NavLink[]              $links Array of NavLinks
+     * @param int                    $depth
+     * @param string                 $id    Id to pass to container
      *
      * @return string
      */
     public function render(
         ServerRequestInterface $request,
         $links,
-        $adminMode,
+        $depth,
         $id
     ) {
         $navHtml
@@ -90,7 +99,7 @@ class RenderLinksBootstrap implements RenderLinks
                     </button>
                 </div>
                 <div id="' . $id . '" class="navbar-collapse collapse">'
-                    . $this->getUl($request, $links, $adminMode, $id) . '
+            . $this->getUl($request, $links, $depth, $id) . '
                 </div>
             </nav>
         ';
@@ -100,31 +109,33 @@ class RenderLinksBootstrap implements RenderLinks
 
     /**
      * @param ServerRequestInterface $request
-     * @param array                  $links     Array of NavLinks
-     * @param boolean                $adminMode Render in admin mode
-     * @param string                 $id        Id to pass to container
+     * @param array                  $links Array of NavLinks
+     * @param int                    $depth
+     * @param string                 $id    Id to pass to container
      *
      * @return string
      */
     protected function getUl(
         ServerRequestInterface $request,
         $links,
-        $adminMode,
+        $depth,
         $id = null
     ) {
         $html = '';
 
+        $menuClass = self::MENU_CLASS . ' ' . self::DEPTH_CLASS . $depth;
+
         if (!empty($id)) {
-            $html .= '<ul class="nav navbar-nav">';
+            $html .= "\n" . '<ul class="nav navbar-nav ' . $menuClass . '">';
         } else {
-            $html .= '<ul class="dropdown-menu" role="menu">';
+            $html .= "\n" . '<ul class="dropdown-menu ' . $menuClass . '" role="menu">';
         }
 
         foreach ($links as $link) {
-            $html .= $this->getLi($request, $link, $adminMode);
+            $html .= $this->getLi($request, $link, $depth);
         }
 
-        $html .= '</ul>' . "\n";
+        $html .= "</ul>\n";
 
         return $html;
     }
@@ -132,39 +143,34 @@ class RenderLinksBootstrap implements RenderLinks
     /**
      * @param ServerRequestInterface $request
      * @param NavLink                $link
-     * @param boolean                $adminMode
+     * @param boolean                $depth
      *
      * @return string
      */
     protected function getLi(
         ServerRequestInterface $request,
         NavLink $link,
-        $adminMode
+        $depth
     ) {
         $objectClass = $link->getClass();
 
         // We always use the default system classes
         $systemClass = $this->getRenderServiceConfigOption->__invoke(
             $link->getRenderService(),
-            'systemClass',
+            'class',
             ''
         );
+
+        $systemClass = $systemClass . ' ' . self::ITEM_CLASS;
 
         if ($link->hasLinks()) {
             $objectClass .= ' dropdown';
         }
 
-        $html = '<li';
+        $html = "\n<li";
 
         if (!empty($objectClass) || !empty($systemClass)) {
             $html .= ' class="' . $objectClass . ' ' . $systemClass . '"';
-        }
-
-        if ($adminMode) {
-            //$html .= ' data-permissions="' . implode(',', $link->getPermissions()) . '"';
-
-            $html .= ' data-is-allowed-options="' . htmlentities(json_encode($link->getIsAllowedServiceOptions()), ENT_QUOTES, 'UTF-8'). '"';
-            $html .= ' data-render-options="' . htmlentities(json_encode($link->getRenderServiceOptions()), ENT_QUOTES, 'UTF-8'). '"';
         }
 
         $html .= '>' . "\n";
@@ -175,20 +181,11 @@ class RenderLinksBootstrap implements RenderLinks
         );
 
         if ($link->hasLinks()) {
-            $html .= $this->getUl($request, $link->getLinks(), $adminMode);
+            $depth++;
+            $html .= $this->getUl($request, $link->getLinks(), $depth);
         }
 
-        $html .= '</li>' . "\n";
-
-        return $html;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getMobileMenu()
-    {
-        $html = '<div class="glyphicon glyphicon-menu-hamburger mobileMenuIcon" aria-hidden="true"></div>';
+        $html .= "</li>\n";
 
         return $html;
     }

@@ -8,7 +8,7 @@ use RcmUser\Api\Authentication\GetIdentity;
 /**
  * @author James Jervis - https://github.com/jerv13
  */
-class IsAllowedRcmUserIfLoggedIn implements IsAllowedIfLoggedIn
+class IsAllowedRcmUserIfLoggedIn implements IsAllowed
 {
     /**
      * @var GetIdentity

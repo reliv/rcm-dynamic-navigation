@@ -4,7 +4,6 @@ namespace RcmDynamicNavigation\Api\Render;
 
 use Psr\Http\Message\ServerRequestInterface;
 use RcmDynamicNavigation\Api\GetRenderServiceConfigOption;
-use RcmDynamicNavigation\Api\Options;
 use RcmDynamicNavigation\Model\NavLink;
 
 /**
@@ -35,7 +34,8 @@ class RenderLinkBootstrap implements RenderLink
         ServerRequestInterface $request,
         NavLink $link,
         array $options = []
-    ): string {
+    ): string
+    {
         $target = $link->getTarget();
         $href = $link->getHref();
 
@@ -48,24 +48,28 @@ class RenderLinkBootstrap implements RenderLink
             );
         }
 
-        $html = '<a href="' . $href . '"';
+        $html = "\n" . '<a href="' . $href . '"';
 
         if ($link->hasLinks()) {
-            $html .= 'class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"';
+            $html .= 'class="dropdown-toggle'
+                . ' ' . self::LINK_CLASS . '"'
+                . ' data-toggle="dropdown" role="button" aria-expanded="false"';
         }
+
+        $html .= ' id="' . $link->getId() . '"';
 
         if (!empty($target)) {
             $html .= ' target="' . $target . '"';
         }
 
         $html .= '>';
-        $html .= '<span class="linkText">' . $link->getDisplay() . '</span>';
+        $html .= "\n" . '<span class="linkText">' . $link->getDisplay() . '</span>' . "\n";
 
         if ($link->hasLinks()) {
-            $html .= '<span class="caret"></span>';
+            $html .= "\n" . '<span class="caret"></span>' . "\n";
         }
 
-        $html .= '</a>' . "\n";
+        $html .= "</a>\n";
 
         return $html;
     }

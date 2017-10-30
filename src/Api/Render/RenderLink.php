@@ -10,6 +10,7 @@ use RcmDynamicNavigation\Model\NavLink;
  */
 interface RenderLink
 {
+    const LINK_CLASS = 'menu-link';
     /**
      * @param ServerRequestInterface $request
      * @param NavLink                $link

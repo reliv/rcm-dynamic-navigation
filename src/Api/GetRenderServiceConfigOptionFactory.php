@@ -16,11 +16,11 @@ class GetRenderServiceConfigOptionFactory
      */
     public function __invoke($serviceContainer)
     {
-        $config = $serviceContainer->get('config');
-        $servicesConfig = $config['rcmPlugin']['RcmDynamicNavigation']['renderServices'];
+        /** @var GetRenderServicesConfig $getRenderServicesConfig */
+        $getRenderServicesConfig = $serviceContainer->get(GetRenderServicesConfig::class);
 
         return new GetRenderServiceConfigOption(
-            $servicesConfig
+            $getRenderServicesConfig->__invoke()
         );
     }
 }

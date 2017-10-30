@@ -52,7 +52,11 @@ class RenderLinkOption implements RenderLink
             'service'
         );
 
-        $renderServiceOptions = $link->getRenderServiceOptions();
+        $renderServiceOptions = Options::get(
+            $renderServiceConfig,
+            'options',
+            []
+        );
 
         /** @var RenderLink $renderService */
         $renderService = $this->serviceContainer->get($renderServiceName);

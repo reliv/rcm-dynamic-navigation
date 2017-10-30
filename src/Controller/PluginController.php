@@ -62,6 +62,7 @@ class PluginController extends BaseController implements PluginInterface
         );
 
         $view->setVariable('links', $allowedLinks);
+        // NOT USED
         $view->setVariable('isAdmin', $this->isAllowedAdmin->__invoke($request));
 
         return $view;
@@ -79,11 +80,6 @@ class PluginController extends BaseController implements PluginInterface
     ) {
         if (empty($links)) {
             return [];
-        }
-
-        // no restrictions for admin
-        if ($this->isAllowedAdmin->__invoke($request)) {
-            return $links;
         }
 
         $allowedLinks = [];
@@ -137,7 +133,11 @@ class PluginController extends BaseController implements PluginInterface
             'service'
         );
 
-        $isAllowedServiceOptions = $link->getIsAllowedServiceOptions();
+        $isAllowedServiceOptions = Options::get(
+            $isAllowedServiceConfig,
+            'options',
+            []
+        );
 
         /** @var IsAllowed $isAllowedService */
         $isAllowedService = $serviceContainer->get($isAllowedServiceName);

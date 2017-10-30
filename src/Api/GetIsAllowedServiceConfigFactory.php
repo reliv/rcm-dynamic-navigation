@@ -16,11 +16,11 @@ class GetIsAllowedServiceConfigFactory
      */
     public function __invoke($serviceContainer)
     {
-        $config = $serviceContainer->get('config');
-        $servicesConfig = $config['rcmPlugin']['RcmDynamicNavigation']['isAllowedServices'];
+        /** @var GetIsAllowedServicesConfig $getIsAllowedServiceConfig */
+        $getIsAllowedServiceConfig = $serviceContainer->get(GetIsAllowedServicesConfig::class);
 
         return new GetIsAllowedServiceConfig(
-            $servicesConfig
+            $getIsAllowedServiceConfig->__invoke()
         );
     }
 }

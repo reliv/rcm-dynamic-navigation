@@ -8,6 +8,9 @@ namespace RcmDynamicNavigation\Model;
 class NavLink
 {
     /** @var string */
+    protected $id;
+
+    /** @var string */
     protected $display;
 
     /** @var string */
@@ -22,53 +25,65 @@ class NavLink
     /** @var array */
     protected $class = [];
 
-    /** @var array */
-    protected $systemClass = [];
-
     /** @var string */
     protected $isAllowedService = 'default';
 
-    /** @var array */
-    protected $isAllowedServiceOptions = [];
-    
     /** @var string */
     protected $renderService = 'default';
 
-    /** @var array */
-    protected $renderServiceOptions = [];
-
     /**
+     * @param string $id
      * @param string $display
      * @param string $href
      * @param string $target
      * @param array  $links
      * @param string $class
-     * @param string $renderService
-     * @param array  $renderServiceOptions
      * @param string $isAllowedService
-     * @param array  $isAllowedServiceOptions
+     * @param string $renderService
      */
     public function __construct(
+        string $id,
         string $display,
         string $href,
         string $target = '',
         array $links = [],
         string $class = '',
         string $isAllowedService = 'default',
-        array $isAllowedServiceOptions = [],
-        string $renderService = 'default',
-        array $renderServiceOptions = []
+        string $renderService = 'default'
     ) {
+        $this->setId($id);
         $this->setDisplay($display);
         $this->setHref($href);
         $this->setTarget($target);
         $this->setLinks($links);
         $this->setClass($class);
-        
+
         $this->setIsAllowedService($isAllowedService);
-        $this->setIsAllowedServiceOptions($isAllowedServiceOptions);
         $this->setRenderService($renderService);
-        $this->setRenderServiceOptions($renderServiceOptions);
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function setId(string $id)
+    {
+        if (empty($id)) {
+            throw new \Exception(
+                'Id is required'
+            );
+        }
+        $this->id = $id;
     }
 
     /**
@@ -246,23 +261,6 @@ class NavLink
     }
 
     /**
-     * @return array
-     */
-    public function getIsAllowedServiceOptions(): array
-    {
-        return $this->isAllowedServiceOptions;
-    }
-
-    /**
-     * @param array $isAllowedServiceOptions
-     */
-    public function setIsAllowedServiceOptions(array $isAllowedServiceOptions)
-    {
-        $this->isAllowedServiceOptions = $isAllowedServiceOptions;
-    }
-
-
-    /**
      * @return string
      */
     public function getRenderService(): string
@@ -277,22 +275,4 @@ class NavLink
     {
         $this->renderService = $renderService;
     }
-
-    /**
-     * @return array
-     */
-    public function getRenderServiceOptions(): array
-    {
-        return $this->renderServiceOptions;
-    }
-
-    /**
-     * @param array $renderServiceOptions
-     */
-    public function setRenderServiceOptions(array $renderServiceOptions)
-    {
-        $this->renderServiceOptions = $renderServiceOptions;
-    }
-    
-    
 }

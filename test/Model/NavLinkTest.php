@@ -213,34 +213,6 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Add And Get System Class
-     *
-     * @return void
-     * @covers \RcmDynamicNavigation\Model\NavLink::addSystemClass
-     * @covers \RcmDynamicNavigation\Model\NavLink::getSystemClass
-     */
-    public function testAddAndGetSystemClass()
-    {
-        $class = 'SomeClass';
-        $this->link->addSystemClass($class);
-        $this->assertEquals($class, $this->link->getSystemClass());
-    }
-
-    /**
-     * Test Set And Get Multiple System Classes
-     *
-     * @return void
-     * @covers \RcmDynamicNavigation\Model\NavLink::setSystemClass
-     * @covers \RcmDynamicNavigation\Model\NavLink::getSystemClass
-     */
-    public function testSetAndGetMultipleSystemClasses()
-    {
-        $class = 'SomeClass AnotherClass YetAnotherClass';
-        $this->link->setSystemClass($class);
-        $this->assertEquals($class, $this->link->getSystemClass());
-    }
-
-    /**
      * Test Set And Get Target
      *
      * @return void

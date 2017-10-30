@@ -5,7 +5,6 @@ namespace RcmDynamicNavigation\Api\Acl;
 use Psr\Http\Message\ServerRequestInterface;
 use RcmDynamicNavigation\Api\Options;
 use RcmUser\Api\Acl\HasRoleBasedAccess;
-use RcmUser\Service\RcmUserService;
 
 /**
  * @author James Jervis - https://github.com/jerv13
@@ -36,7 +35,8 @@ class IsAllowedRcmUserRoles implements IsAllowedRoles
     public function __invoke(
         ServerRequestInterface $request,
         array $options = []
-    ): bool {
+    ): bool
+    {
         $permittedRoles = Options::get(
             $options,
             IsAllowedRoles::OPTION_PERMITTED_ROLES,
