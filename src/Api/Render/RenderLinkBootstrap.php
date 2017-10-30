@@ -56,8 +56,6 @@ class RenderLinkBootstrap implements RenderLink
                 . ' data-toggle="dropdown" role="button" aria-expanded="false"';
         }
 
-        $html .= ' id="' . $link->getId() . '"';
-
         if (!empty($target)) {
             $html .= ' target="' . $target . '"';
         }

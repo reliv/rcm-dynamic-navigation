@@ -173,6 +173,8 @@ class RenderLinksBootstrap implements RenderLinks
             $html .= ' class="' . $objectClass . ' ' . $systemClass . '"';
         }
 
+        $html .= ' id="' . $link->getId() . '"';
+
         $html .= '>' . "\n";
 
         $html .= $this->renderLinkOption->__invoke(

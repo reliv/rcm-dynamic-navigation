@@ -26,6 +26,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
                 pluginHandler.getInstanceConfig(
                     function (instanceConfig, defaultInstanceConfig) {
                         self.saveData = instanceConfig;
+                        self.saveData.links = self.prepareBc(self.saveData.links);
                         self.render(self.saveData);
                     }
                 );
@@ -75,9 +76,6 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
                 var elem = jQuery(pluginHandler.getPluginContainer());
 
                 elem.html(data.html);
-
-                var links = self.prepareBcUi(saveData.links);
-
                 self.prepareUi(saveData.links);
             }
         ).fail(
@@ -92,11 +90,11 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
      * @param links
      * @returns {*}
      */
-    self.prepareBcUi = function (links) {
+    self.prepareBc = function (links) {
         for (link in links) {
             links[link].id = getId(links[link]);
             if (links[link].links && links[link].links.length > 0) {
-                links[link].links = self.prepareBcUi(links[link].links)
+                links[link].links = self.prepareBc(links[link].links)
             }
         }
 
@@ -137,8 +135,6 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
      *
      */
     self.addRightClickMenu = function (links, depth) {
-
-        console.log(links);
         if (!depth) {
             depth = 0;
         }
@@ -149,7 +145,6 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         for (link in links) {
             var adminMenuItems = self.getAdminMenuItems(links[link], depth);
             selector = containerSelector + ' #' + links[link].id;
-            console.log(selector);
             self.addRightClickMenuDialog(selector, adminMenuItems);
 
             if (links[link].links && links[link].links.length > 0) {

@@ -78,11 +78,6 @@ class NavLink
      */
     public function setId(string $id)
     {
-        if (empty($id)) {
-            throw new \Exception(
-                'Id is required'
-            );
-        }
         $this->id = $id;
     }
 
