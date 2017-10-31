@@ -252,7 +252,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
                 '': 'No',
                 '_blank': 'Yes'
             },
-            link.target,
+            (link.target ? link.target : ''),
             true
         );
 
@@ -266,8 +266,8 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         var isAllowedServiceInput = $.dialogIn(
             'select',
             'Display Rule',
-            'default',
             isAllowedServiceOptions,
+            (link.isAllowedService ? link.isAllowedService : 'default'),
             false
         );
 
@@ -281,8 +281,8 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         var renderServiceInput = $.dialogIn(
             'select',
             'Display Type',
-            'default',
             renderServiceOptions,
+            (link.renderService ? link.renderService : 'default'),
             false
         );
 
