@@ -11,7 +11,6 @@ class LinkFromData
 {
     const LOGIN_CLASS = 'rcmDynamicNavigationLogin';
     const LOGOUT_CLASS = 'rcmDynamicNavigationLogout';
-    const LOGIN_MAIN_CLASS = 'rcmDynamicNavigationAuthMenuItem';
 
     /**
      * @param array $linkData
@@ -66,6 +65,11 @@ class LinkFromData
                 $linkData,
                 'renderService',
                 'default'
+            ),
+            Options::get(
+                $linkData,
+                'options',
+                []
             )
         );
     }
@@ -116,7 +120,7 @@ class LinkFromData
         }
 
         if (strpos($class, self::LOGOUT_CLASS) !== false) {
-            $linkData['renderService'] = 'log-out';
+            //$linkData['renderService'] = 'default';
             $linkData['isAllowedService'] = 'show-if-logged-in';
         }
 
@@ -137,7 +141,7 @@ class LinkFromData
         }
 
         if (strpos($class, self::LOGIN_CLASS) !== false) {
-            $linkData['renderService'] = 'log-in';
+            //$linkData['renderService'] = 'default';
             $linkData['isAllowedService'] = 'show-if-not-logged-in';
         }
 

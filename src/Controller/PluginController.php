@@ -5,11 +5,9 @@ namespace RcmDynamicNavigation\Controller;
 use Psr\Http\Message\ServerRequestInterface;
 use Rcm\Plugin\BaseController;
 use Rcm\Plugin\PluginInterface;
-use RcmDynamicNavigation\Api\Acl\IsAllowed;
 use RcmDynamicNavigation\Api\Acl\IsAllowedAdmin;
-use RcmDynamicNavigation\Api\GetIsAllowedServiceConfig;
+use RcmDynamicNavigation\Api\Acl\IsLinkAllowed;
 use RcmDynamicNavigation\Api\LinksFromData;
-use RcmDynamicNavigation\Api\Options;
 use RcmDynamicNavigation\Model\NavLink;
 use Zend\Diactoros\ServerRequestFactory;
 
@@ -22,20 +20,20 @@ class PluginController extends BaseController implements PluginInterface
      * @var IsAllowedAdmin
      */
     protected $isAllowedAdmin;
-    protected $getIsAllowedServiceConfig;
+    protected $isLinkAllowed;
 
     /**
-     * @param IsAllowedAdmin            $isAllowedAdmin
-     * @param GetIsAllowedServiceConfig $getIsAllowedServiceConfig
-     * @param array                     $config
+     * @param IsAllowedAdmin $isAllowedAdmin
+     * @param IsLinkAllowed  $isLinkAllowed
+     * @param array          $config
      */
     public function __construct(
         IsAllowedAdmin $isAllowedAdmin,
-        GetIsAllowedServiceConfig $getIsAllowedServiceConfig,
+        IsLinkAllowed $isLinkAllowed,
         $config
     ) {
         $this->isAllowedAdmin = $isAllowedAdmin;
-        $this->getIsAllowedServiceConfig = $getIsAllowedServiceConfig;
+        $this->isLinkAllowed = $isLinkAllowed;
 
         parent::__construct($config, 'RcmDynamicNavigation');
     }
@@ -89,7 +87,7 @@ class PluginController extends BaseController implements PluginInterface
          * @var NavLink $link
          */
         foreach ($links as $index => $link) {
-            if (!$this->isLinkAllowed($request, $link)) {
+            if (!$this->isLinkAllowed->__invoke($request, $link)) {
                 continue;
             }
 
@@ -106,45 +104,5 @@ class PluginController extends BaseController implements PluginInterface
         }
 
         return $allowedLinks;
-    }
-
-    /**
-     * Check an individual link
-     *
-     * @param ServerRequestInterface $request
-     * @param NavLink                $link
-     *
-     * @return bool
-     */
-    protected function isLinkAllowed(
-        ServerRequestInterface $request,
-        NavLink $link
-    ) {
-        $serviceContainer = $this->getServiceLocator();
-
-        $isAllowedServiceAlias = $link->getIsAllowedService();
-
-        $isAllowedServiceConfig = $this->getIsAllowedServiceConfig->__invoke(
-            $isAllowedServiceAlias
-        );
-
-        $isAllowedServiceName = Options::getRequired(
-            $isAllowedServiceConfig,
-            'service'
-        );
-
-        $isAllowedServiceOptions = Options::get(
-            $isAllowedServiceConfig,
-            'options',
-            []
-        );
-
-        /** @var IsAllowed $isAllowedService */
-        $isAllowedService = $serviceContainer->get($isAllowedServiceName);
-
-        return $isAllowedService->__invoke(
-            $request,
-            $isAllowedServiceOptions
-        );
     }
 }

@@ -40,6 +40,7 @@ class Options
         if (!array_key_exists($key, $params)) {
             throw new \Exception(
                 'Option is missing: ' . $key
+                . ' in: ' . var_export($params, true)
             );
         }
 

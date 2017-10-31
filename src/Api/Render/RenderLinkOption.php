@@ -58,6 +58,19 @@ class RenderLinkOption implements RenderLink
             []
         );
 
+        $linkRenderOptions = Options::get(
+            $link->getOptions(),
+            $renderServiceAlias,
+            []
+        );
+
+        // over-ride defaults if set in link
+        foreach ($renderServiceOptions as $key => $value) {
+            if (array_key_exists($key, $linkRenderOptions)) {
+                $renderServiceOptions[$key] = $linkRenderOptions[$key];
+            }
+        }
+
         /** @var RenderLink $renderService */
         $renderService = $this->serviceContainer->get($renderServiceName);
 

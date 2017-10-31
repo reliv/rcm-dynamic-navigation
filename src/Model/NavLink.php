@@ -31,6 +31,8 @@ class NavLink
     /** @var string */
     protected $renderService = 'default';
 
+    protected $options = [];
+
     /**
      * @param string $id
      * @param string $display
@@ -49,7 +51,8 @@ class NavLink
         array $links = [],
         string $class = '',
         string $isAllowedService = 'default',
-        string $renderService = 'default'
+        string $renderService = 'default',
+        array $options
     ) {
         $this->setId($id);
         $this->setDisplay($display);
@@ -269,5 +272,21 @@ class NavLink
     public function setRenderService(string $renderService)
     {
         $this->renderService = $renderService;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
     }
 }

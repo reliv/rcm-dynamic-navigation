@@ -2,6 +2,8 @@
 
 namespace RcmDynamicNavigation;
 
+use RcmDynamicNavigation\Api\Acl\IsLinkAllowed;
+use RcmDynamicNavigation\Api\Acl\IsLinkAllowedDefaultFactory;
 use RcmDynamicNavigation\Api\GetIsAllowedServicesConfig;
 use RcmDynamicNavigation\Api\GetIsAllowedServicesConfigFactory;
 use RcmDynamicNavigation\Api\GetRenderServicesConfig;
@@ -21,15 +23,15 @@ class ModuleConfig
         = [
             "links" => [
                 0 => [
+                    'id' => '',
                     'display' => 'Untitled Link',
                     'href' => "#",
                     'class' => '',
                     'target' => '',
                     'links' => [],
                     'renderService' => 'default',
-                    'renderServiceOptions' => [],
                     'isAllowedService' => 'default',
-                    'isAllowedServiceOptions' => [],
+                    'options' => [],
                 ],
             ],
         ];
@@ -80,6 +82,11 @@ class ModuleConfig
 
                     \RcmDynamicNavigation\Api\Acl\IsAllowedRoles::class
                     => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserRolesFactory::class,
+
+                    IsLinkAllowed::class
+                    => IsLinkAllowedDefaultFactory::class,
+
+                    /* CONTROLLERS */
 
                     ApiAdminController::class
                     => ApiAdminControllerFactory::class,
@@ -163,22 +170,22 @@ class ModuleConfig
                                 'class' => 'rcm-dynamic-navigation-default',
                             ],
                         ],
-                        'log-in' => [
-                            'displayName' => 'Log in Bootstrap rendering',
-                            'service' => \RcmDynamicNavigation\Api\Render\RenderLinkBootstrap::class,
-                            'options' => [
-                                'class' => 'rcmDynamicNavigationLogin rcmDynamicNavigationAuthMenuItem',
-                                'href' => '/login',
-                            ],
-                        ],
-                        'log-out' => [
-                            'displayName' => 'Log out Bootstrap rendering',
-                            'service' => \RcmDynamicNavigation\Api\Render\RenderLinkBootstrap::class,
-                            'options' => [
-                                'class' => 'rcmDynamicNavigationLogout rcmDynamicNavigationAuthMenuItem',
-                                'href' => '/login?logout=1',
-                            ],
-                        ],
+                        //'log-in' => [
+                        //    'displayName' => 'Log in Bootstrap rendering',
+                        //    'service' => \RcmDynamicNavigation\Api\Render\RenderLinkBootstrap::class,
+                        //    'options' => [
+                        //        'class' => 'rcmDynamicNavigationLogin rcmDynamicNavigationAuthMenuItem',
+                        //        'href' => '/login',
+                        //    ],
+                        //],
+                        //'log-out' => [
+                        //    'displayName' => 'Log out Bootstrap rendering',
+                        //    'service' => \RcmDynamicNavigation\Api\Render\RenderLinkBootstrap::class,
+                        //    'options' => [
+                        //        'class' => 'rcmDynamicNavigationLogout rcmDynamicNavigationAuthMenuItem',
+                        //        'href' => '/login?logout=1',
+                        //    ],
+                        //],
                     ],
                 ],
             ],

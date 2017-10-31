@@ -32,7 +32,8 @@ class GetRenderServiceConfigOption
     ) {
         $serviceConfig = Options::get(
             $this->servicesConfig,
-            $serviceAlias
+            $serviceAlias,
+            []
         );
 
         $options = Options::get(
