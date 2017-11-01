@@ -22,26 +22,16 @@
       "homepage": "http://www.reliv.com/"
     },
     {
-      "name": "Brian Janish",
-      "email": "bjanish@relivinc.com",
-      "homepage": "http://www.reliv.com/"
-    },
-    {
       "name": "James Jervis",
       "email": "jjervis@relivinc.com",
-      "homepage": "http://www.reliv.com/"
-    },
-    {
-      "name": "Inna Davis",
-      "email": "idavis@relivinc.com",
       "homepage": "http://www.reliv.com/"
     }
   ],
   "require": {
     "php": ">=5.4.0",
-    "rcm/core": "^1.21.1",
-    "rcm/core-js": "^1.0.0",
-    "rcm/user": "1.*",
+    "rcm/core": "^1.23.2",
+    "rcm/core-js": "^1.1.4",
+    "rcm/user": "^1.5.2",
     "psr/http-message": "^1.0",
     "zendframework/zend-diactoros": "^1.5.0",
     "zendframework/zend-view": "2.*"
