@@ -49,6 +49,10 @@ class IsLinkAllowedDefault implements IsLinkAllowed
             'service'
         );
 
+        if (empty($isAllowedServiceName)) {
+            $isAllowedServiceName = 'default';
+        }
+
         $isAllowedServiceOptions = Options::get(
             $isAllowedServiceConfig,
             'options',

@@ -2,7 +2,7 @@
 
 namespace RcmDynamicNavigation\Api\Render;
 
-use Psr\Container\ContainerInterface ;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RcmDynamicNavigation\Api\GetRenderServiceConfig;
 use RcmDynamicNavigation\Api\Options;
@@ -47,10 +47,14 @@ class RenderLinkOption implements RenderLink
             $renderServiceAlias
         );
 
-        $renderServiceName = Options::getRequired(
+        $renderServiceName = Options::get(
             $renderServiceConfig,
             'service'
         );
+
+        if (empty($renderServiceName)) {
+            $renderServiceName = 'default';
+        }
 
         $renderServiceOptions = Options::get(
             $renderServiceConfig,
