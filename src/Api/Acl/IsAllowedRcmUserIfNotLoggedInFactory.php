@@ -8,16 +8,16 @@ use RcmUser\Api\Authentication\GetIdentity;
 /**
  * @author James Jervis - https://github.com/jerv13
  */
-class IsAllowedRcmUserIfLoggedInFactory
+class IsAllowedRcmUserIfNotLoggedInFactory
 {
     /**
      * @param ContainerInterface $serviceContainer
      *
-     * @return IsAllowedRcmUserIfLoggedIn
+     * @return IsAllowedRcmUserIfNotLoggedIn
      */
     public function __invoke($serviceContainer)
     {
-        return new IsAllowedRcmUserIfLoggedIn(
+        return new IsAllowedRcmUserIfNotLoggedIn(
             $serviceContainer->get(GetIdentity::class)
         );
     }

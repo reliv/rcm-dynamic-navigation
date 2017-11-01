@@ -1,80 +1,378 @@
 /**
- * RcmDynamicNavigation Edit
- *
- * JS for editing RcmNavigation
- *
- * PHP version 5.3
- *
- * LICENSE: No License yet
- *
- * @category  Reliv
- * @author    Rod McNew <rmcnew@relivinc.com>
- * @copyright 2012 Reliv International
- * @license   License.txt New BSD License
- * @version   GIT: <git_id>
+ * {RcmDynamicNavigationEditCustomDialogsConfig}
+ * @type {{'serviceAlias': {function}}}
+ */
+var RcmDynamicNavigationEditCustomDialogsConfig = {
+    'show-if-has-access-role': function (link, options) {
+        var initialVal = '';
+        var showPermissionsDialog = function (permissions, link) {
+            var selectedRoles = permissions.split(",");
+
+            var selected = {};
+
+            jQuery.each(
+                selectedRoles,
+                function (i, v) {
+                    selected[v] = v;
+                }
+            );
+
+            rcmShowPermissions(
+                selected,
+                function (roles) {
+                    if (roles.length > 1) {
+                        link.options['show-if-has-access-role'].permissions = roles.join(',');
+                        return;
+                    }
+                    link.options['show-if-has-access-role'].permissions = roles[0];
+                }
+            );
+        };
+
+        if (
+            link.options['show-if-has-access-role'] && link.options['show-if-has-access-role'].permissions
+        ) {
+            initialVal = link.options['show-if-has-access-role'].permissions;
+        }
+
+        link.options['show-if-has-access-role'] = {
+            permissions: initialVal
+        };
+
+        // from rcm-admin
+        showPermissionsDialog(initialVal, link);
+    },
+};
+
+/**
+ * {RcmDynamicNavigationEditCustomDialogs}
+ * @constructor
+ */
+var RcmDynamicNavigationEditCustomDialogs = function () {
+    self = this;
+
+    self.hasDialog = function (serviceAlias) {
+        if (!self.config[serviceAlias]) {
+            return false;
+        }
+
+        return true;
+    };
+
+    self.showServiceDialog = function (serviceAlias, link, options) {
+        if (!self.hasDialog(serviceAlias)) {
+            return;
+        }
+
+        self.config[serviceAlias](link, options)
+    };
+
+    self.createEditButton = function (input, link) {
+        var serviceAlias = input.val();
+
+        jQuery(input).find('.custom-dialog-edit-button').remove();
+
+        if (!self.hasDialog(serviceAlias)) {
+            return;
+        }
+
+        var editButton = jQuery(
+            '<span class="custom-dialog-edit-button">' +
+            '&nbsp;<input type="button" value="Edit" style="width: auto"/>' +
+            '</span>'
+        );
+
+        editButton.click(
+            function () {
+                self.showServiceDialog(
+                    serviceAlias,
+                    link
+                )
+            }
+        );
+
+        input.append(
+            editButton
+        );
+    };
+
+    self.config = RcmDynamicNavigationEditCustomDialogsConfig;
+};
+
+var RcmDynamicNavigationLink = function (id) {
+    var self = this;
+    self.id = id;
+    self.display = 'Untitled Link';
+    self.href = "#";
+    self.class = '';
+    self.target = '';
+    self.links = [];
+    self.renderService = 'default';
+    self.isAllowedService = 'default';
+    self.options = [];
+};
+
+/**
+ * @param instanceId
+ * @param container
+ * @param {RcmAdminPlugin} pluginHandler
+ * @constructor
  */
 var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
+    var self = this;
+    var services = null;
+    var renderEndpoint = '/rcm-dynamic-navigation/render-links';
+    var servicesEndpoint = '/api/rcm-dynamic-navigation/services';
+    var containerSelector = pluginHandler.model.getPluginContainerSelector(instanceId);
+    var customDialogs = new RcmDynamicNavigationEditCustomDialogs();
+
+    self.saveData = null;
 
     /**
-     * Always refers to this object unlike the 'this' JS variable;
+     * @BC SUPPORT
+     * @param links
+     * @returns {*}
      */
-    var me = this;
+    var prepareBc = function (links) {
+        for (var index in links) {
+            var link = links[index];
+            
+            link.id = generateId();
 
-    me.liClassesToFilter = [
-        'dropdown',
-        'open',
-        'context-menu-active',
-        'HiddenLink'
-    ];
+            if (link.class && link.class.indexOf('rcmDynamicNavigationLogout') !== false) {
+                link.isAllowedService = 'show-if-logged-in';
+            }
 
-    me.liClassesForLogin = [
-        'rcmDynamicNavigationLogout',
-        'rcmDynamicNavigationLogin',
-        'rcmDynamicNavigationAuthMenuItem'
-    ];
+            if (link.class && link.class.indexOf('rcmDynamicNavigationLogin') !== false) {
+                link.isAllowedService = 'show-if-not-logged-in';
+            }
 
-    me.aClassesToFilter = [
-        'dropdown-toggle'
-    ];
+            if (link.permissions) {
+                link.isAllowedService = 'show-if-has-access-role';
+                link.options = {
+                    'show-if-has-access-role': {
+                        'permissions': link.permissions,
+                    }
+                };
+            }
 
-    me.seperatorCount = 0;
+            if (!link.options) {
+                link.options = {};
+            }
+
+            if (!link.links) {
+                link.links = [];
+            }
+
+            if (link.links && link.links.length > 0) {
+                link.links = prepareBc(link.links)
+            }
+        }
+
+        return links;
+    };
 
     /**
-     * The selector to get this plugin container
-     * @type {String}
+     * @returns {string}
      */
-    me.containerSelector = rcm.getPluginContainerSelector(instanceId);
+    var generateId = function () {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+
+        var guid = function () {
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                s4() + '-' + s4() + s4() + s4();
+        };
+
+        return guid();
+    };
+
 
     /**
-     * Used for creating new links
-     *
-     * @type {String}
+     * @returns {Promise}
      */
-    me.newLinkTemplate = '<li><a href=""><span class="linkText">Untitled Link</span></a></li>';
+    var fetchServices = function () {
+        return jQuery.ajax(
+            {
+                method: "GET",
+                url: servicesEndpoint
+            }
+        );
+    };
 
     /**
-     * Used for creating new links
-     *
-     * @type {String}
+     * @param saveData
+     * @param onComplete
      */
-    me.newSubMenuTemplate = '<ul class="dropdown-menu" role="menu"><li><a href=""><span class="linkText">Untitled Link</span></a></li></ul>';
+    var render = function (saveData, onComplete) {
+        // @todo pluginHandler.preview issue due to calling initEdit after each render
+        // pluginHandler.preview(
+        //     function (data) {
+        //         self.prepareUi(saveData.links);
+        //     }
+        // );
+
+        jQuery.ajax(
+            {
+                method: "POST",
+                url: renderEndpoint,
+                data: saveData
+            }
+        ).then(
+            function (data) {
+                var elem = jQuery(containerSelector);
+
+                elem.html(data.html);
+
+                elem.find('.menu-item');
+
+                self.prepareUi(saveData.links);
+
+                if (typeof onComplete === 'function') {
+                    onComplete();
+                }
+            }
+        ).fail(
+            function (error) {
+                console.error(error);
+                alert('An error occurred while talking to the server');
+            }
+        );
+
+    };
+
+    var createLink = function () {
+        var link = new RcmDynamicNavigationLink(generateId());
+
+        self.saveData.links.push(
+            link
+        );
+
+        render(
+            self.saveData,
+            function () {
+                self.showEditDialog(link);
+            }
+        );
+    };
+
+    var createSubLink = function (parentLink, subLink, onComplete) {
+        parentLink.links.push(
+            subLink
+        );
+
+        render(self.saveData, onComplete);
+    };
+
+    var deleteLink = function (linkToRemove, onComplete) {
+        self.saveData.links = removeLink(self.saveData.links, linkToRemove);
+
+        render(self.saveData, onComplete);
+    };
+
+    var removeLink = function (links, linkToRemove) {
+        var cleanLinks = [];
+
+        for (var index in links) {
+            var link = links[index];
+
+            if (link.links && link.links.length > 0) {
+                link.links = removeLink(link.links, linkToRemove);
+            }
+
+            if (link.id !== linkToRemove.id) {
+                cleanLinks.push(link);
+            }
+        }
+
+        return cleanLinks
+    };
 
     /**
-     * Used for creating new links
-     *
-     * @type {String}
+     * @param links
+     * @returns {*}
      */
-    me.loginLinkTemplate = '<li class="rcmDynamicNavigationLogout rcmDynamicNavigationAuthMenuItem"><a href="/login?logout=1">Logout</a></li>';
-    me.loginLinkTemplate = me.loginLinkTemplate + '<li class="rcmDynamicNavigationLogin rcmDynamicNavigationAuthMenuItem"><a href="/login">Login</a></li>';
+    var indexLinks = function (links) {
+
+        var indexedLinks = {};
+
+        for (var index in links) {
+            var link = links[index];
+
+            indexedLinks[link.id] = link;
+        }
+
+        return indexedLinks;
+    };
+
+    /**
+     * @param links
+     * @param orderIndex
+     * @returns {Array}
+     */
+    var orderLinks = function (links, orderIndex) {
+        var indexedLinks = indexLinks(links);
+        var orderedLinks = [];
+
+        for (var linkId in orderIndex) {
+            if (typeof indexedLinks[linkId] === 'undefined') {
+                continue;
+            }
+            var link = indexedLinks[linkId];
+            if (link.links && link.links.length > 0) {
+                link.links = orderLinks(link.links, orderIndex);
+            }
+
+            orderedLinks.push(link);
+        }
+
+        return orderedLinks;
+    };
+
+    /**
+     * @returns {{}}
+     */
+    var buildOrderFromDom = function () {
+        var elem = jQuery(containerSelector);
+
+        var menuItems = elem.find('.menu-item');
+
+        var orderIndex = {};
+
+        menuItems.each(
+            function (index) {
+                orderIndex[jQuery(this).attr('id')] = index;
+            }
+        );
+
+        return orderIndex;
+    };
 
     /**
      * Called by content management system to make this plugin user-editable
      */
-    me.initEdit = function () {
+    self.initEdit = function () {
+        fetchServices().then(
+            function (result) {
+                services = result;
+                pluginHandler.getInstanceConfig(
+                    function (instanceConfig, defaultInstanceConfig) {
+                        self.saveData = instanceConfig;
+                        self.saveData.links = prepareBc(self.saveData.links);
+                        render(self.saveData);
+                    }
+                );
+            }
+        ).catch(
+            function (error) {
+                console.error(error);
+                alert('An error occurred while talking to the server');
 
-        var links = jQuery(me.containerSelector).find("li");
-        links.removeClass('HiddenLink');
-        me.refresh();
+            }
+        );
     };
 
     /**
@@ -83,198 +381,112 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
      *
      * @return {Object}
      */
-    me.getSaveData = function () {
-
-        var mainLinks = jQuery(me.containerSelector).find("#RcmDynamicNavigation_"+instanceId).children("ul:first").children("li").toArray();
-
-        var data = [];
-
-        jQuery.each(mainLinks, function(i, link){
-            data.push(me.getLinkData(i, link));
-        });
-
-        var saveData = {
-            links : data
-        };
-
-        return saveData;
+    self.getSaveData = function () {
+        return self.saveData;
     };
 
-    me.getLinkData = function(myIndex, link) {
+    /** UI ==================================== **/
 
-        var a = jQuery(link).children("a:first");
+    /**
+     *
+     * @param links
+     */
+    self.prepareUi = function (links) {
+        self.addRightClickMenu(links, 0);
+        jQuery(containerSelector).find('a').click(false);
 
-        var myLinkData = {
-            "myIndex" : myIndex,
-            'display' : a.find('span.linkText').text().trim(),
-            'href' : a.attr('href'),
-            'target': a.attr("target"),
-            'class' : me.getLiClasses(link, true),
-            'permissions' : jQuery(link).attr('data-permissions')
-        };
-
-        var linksArray = [];
-
-        var subLinks = jQuery(link).children("ul:first").children("li");
-
-        jQuery.each(subLinks, function(i, subLink){
-            linksArray.push(me.getLinkData(i, subLink));
-        });
-
-        myLinkData.links = linksArray;
-
-        return myLinkData;
-    };
-
-
-    me.addItem = function(item) {
-        var selectedLi = jQuery(item);
-        var newLi = jQuery(me.newLinkTemplate);
-
-        selectedLi.after(newLi);
-        me.refresh();
-    };
-
-    me.addSubMenu = function(item) {
-        var selectedLi = jQuery(item);
-        var newUl = jQuery(me.newSubMenuTemplate);
-
-        if (selectedLi.find('ul').length > 0 ) {
-            return;
+        try {
+            //Prevent links from being arrangeable
+            container.find('.menu').sortable('destroy');
+        } catch (e) {
+            //do nothing
         }
 
-        selectedLi.addClass('dropdown');
-
-        var parentATag = selectedLi.find('a');
-
-        if (!parentATag.hasClass('dropdown-toggle')) {
-            parentATag.addClass('dropdown-toggle');
-        }
-
-        var dataToggle = parentATag.attr('data-toggle');
-
-        if (dataToggle === undefined || dataToggle === false) {
-            parentATag.attr('data-toggle',"dropdown" );
-        }
-
-        var roleAttr = parentATag.attr('role');
-
-        if (roleAttr === undefined || roleAttr === false) {
-            parentATag.attr('role',"button" );
-        }
-
-        var ariaExpanded = parentATag.attr('aria-expanded');
-
-        if (ariaExpanded === undefined || ariaExpanded === false) {
-            parentATag.attr('aria-expanded',"false" );
-        }
-
-        parentATag.append('<span class="caret"></span>');
-
-        selectedLi.append(newUl);
-        me.refresh();
-    };
-
-    me.addLoginLink = function(item) {
-        var menuBar = jQuery(me.containerSelector).find('nav').find('ul:first-child');
-
-        if (menuBar.find(".rcmDynamicNavigationLogout").length > 0) {
-            return;
-        }
-
-        newLi = jQuery(me.loginLinkTemplate);
-
-        menuBar.append(newLi);
-        me.refresh();
-    };
-
-    me.getColumnCount = function(item) {
-        return item.find('div').length;
-    };
-
-    me.deleteItem = function(item) {
-        var li = jQuery(item);
-        var a = li.find('a');
-        var itemtext = $.trim(a.html());
-        var myTopParentUl = li.parents('ul:last');
-
-        jQuery().confirm(
-            'Delete this link?<br><br>"' + itemtext + '"',
-            function () {
-
-                //Don't let them delete the last link
-                if (myTopParentUl.children('li').length == 1) {
-                    me.addItem(item);
+        //Make links arrangeable
+        var menuElems = container.find('.menu');
+        menuElems.sortable(
+            {
+                connectWith: containerSelector + ' .menu',
+                stop: function (event, ui) {
+                    var orderIndex = buildOrderFromDom();
+                    self.saveData.links = orderLinks(self.saveData.links, orderIndex);
                 }
+            }
+        );
 
-                li.remove();
-                me.refresh();
+        jQuery(containerSelector).find("a").unbind('click');
+
+        jQuery(containerSelector).find('.menu-item').dblclick(
+            function () {
+                self.showEditDialog(jQuery(this))
             }
         );
     };
 
     /**
-     * Add the elements we need for editing to the DOM
+     * @param links
+     * @param depth
      */
-    me.addRightClickMenu = function () {
-        var mainMenuItems = me.getMenuItems('main');
-        me.addRightClickMenuDialog(me.containerSelector + ' ul:first > li', mainMenuItems);
-
-        var subMenuItems = me.getMenuItems('sub');
-        me.addRightClickMenuDialog(me.containerSelector + ' ul:first > li li', subMenuItems);
-    };
-
-    me.addRightClickMenuDialog = function(selector, items)
-    {
-        jQuery.contextMenu('destroy', selector);
-
-        //Add right click menu
-        jQuery.contextMenu({
-            selector: selector,
-
-            events: {
-                hide: function () {
-                    //Keep nav open for 200ms after the right click menu closes
-                    //to ensure the nav stays open if the mouse is still over it
-                    //setTimeout(function () {
-                    //    me.popupToKeepUp.removeAttr('style')
-                    //}, 200);
-                }
-            },
-
-            //Here are the right click menu options
-            items: items
-        });
-    };
-
-    me.getMenuItems = function(type)
-    {
-
-        me.seperatorCount = 0;
-
-        var showAddLoginLinkMenu = {};
-
-        if (jQuery(me.containerSelector + " .rcmDynamicNavigationAuthMenuItem").length < 1 && type == 'main') {
-            showAddLoginLinkMenu = {
-                loginLink: {
-                    name: 'Add Login Link',
-                    icon: 'add',
-                    callback: function () {
-                        me.addLoginLink(this);
-                    }
-                }
-            }
+    self.addRightClickMenu = function (links, depth) {
+        if (!depth) {
+            depth = 0;
         }
 
+        var selector;
+
+        for (var index in links) {
+            var adminMenuItems = self.getAdminMenuItems(links[index], depth);
+            selector = containerSelector + ' #' + links[index].id;
+            self.addRightClickMenuDialog(selector, adminMenuItems);
+
+            if (links[index].links && links[index].links.length > 0) {
+                var subDepth = depth + 1;
+                self.addRightClickMenu(links[index].links, subDepth)
+            }
+        }
+    };
+
+    /**
+     *
+     * @param selector
+     * @param adminMenuItems
+     */
+    self.addRightClickMenuDialog = function (selector, adminMenuItems) {
+        jQuery.contextMenu('destroy', selector);
+
+        jQuery.contextMenu(
+            {
+                selector: selector,
+                items: adminMenuItems
+            }
+        );
+    };
+
+    /**
+     * @param link
+     * @param depth
+     * @returns {{}}
+     */
+    self.getAdminMenuItems = function (link, depth) {
         var createSubMenuItem = {};
 
-        if (type == 'main') {
+        if (depth == 0) {
             createSubMenuItem = {
                 createSub: {
                     name: 'Add Sub Menu Link',
                     icon: 'add',
                     callback: function () {
-                        me.addSubMenu(this);
+                        var subLink = new RcmDynamicNavigationLink(generateId());
+
+                        createSubLink(
+                            link,
+                            subLink,
+                            function () {
+                                self.showEditDialog(
+                                    subLink
+                                );
+                            }
+                        );
                     }
                 },
             };
@@ -285,17 +497,9 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
                 name: 'Edit Link Properties',
                 icon: 'edit',
                 callback: function () {
-                    me.showEditDialog(this, false);
-                }
-            }
-        };
-
-        var permissionMenuItem = {
-            permissions: {
-                name: 'Change Link View Permissions',
-                icon: 'edit',
-                callback: function () {
-                    me.showPermissionsDialog(this);
+                    self.showEditDialog(
+                        link
+                    );
                 }
             }
         };
@@ -305,7 +509,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
                 name: 'Create New Link',
                 icon: 'add',
                 callback: function () {
-                    me.addItem(this);
+                    createLink();
                 }
             },
         };
@@ -314,178 +518,155 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
             deleteLink: {
                 name: 'Delete Link',
                 icon: 'delete',
-                callback: function() {
-                    me.deleteItem(this);
+                callback: function () {
+                    deleteLink(link);
                 }
             }
         };
 
-        var items = {};
+        var adminMenuItems = {};
 
-        jQuery.extend(items, editLinkPropertiesMenuItem, me.getSeperator(), editLinkPropertiesMenuItem, permissionMenuItem, createNewLinkMenuItem, createSubMenuItem, deleteLinkMenuItem, me.getSeperator(), showAddLoginLinkMenu);
+        jQuery.extend(
+            adminMenuItems,
+            editLinkPropertiesMenuItem,
+            {separator: '-'},
+            editLinkPropertiesMenuItem,
+            createNewLinkMenuItem,
+            createSubMenuItem,
+            deleteLinkMenuItem
+        );
 
-        return items;
-    };
-
-    me.getSeperator = function()
-    {
-        var seperatorId = 'seperator'+me.seperatorCount;
-        var seperator = {};
-        seperator[seperatorId] = '-';
-
-        me.seperatorCount++;
-        return seperator;
-    };
-
-    me.isLoginLink = function(item) {
-
+        return adminMenuItems;
     };
 
     /**
      * Displays a dialog box to edit or add links
      *
-     * @param {Object} li the tag that we are editing
-     * @param {Boolean} [deleteOnClose] will delete the link if user clicks cancel
+     * @param {Object} link the link that we are editing
      */
-    me.showEditDialog = function (li, deleteOnClose) {
+    self.showEditDialog = function (link) {
+        var tempLink = jQuery.extend({}, link);
 
-        var a = li.children('a');
+        var text = jQuery.dialogIn('text', 'Text', tempLink.display);
+        var href = jQuery.dialogIn('url', 'Link Url', tempLink.href);
 
-        //Find out what css class this link has
-        var currentClasses = me.getLiClasses(li, false);
-
-        if (typeof(currentClasses) == 'undefined') {
-            currentClasses = '';
-        }
-
-        var okClicked = false;
-
-        var text = $.dialogIn('text', 'Text', jQuery.trim(a.find("span.linkText").text()));
-        var href = $.dialogIn('url', 'Link Url', jQuery.trim(a.attr('href')));
-
-        var aTarget = $.dialogIn(
+        var aTarget = jQuery.dialogIn(
             'select',
             'Open in new window',
-            {'': 'No', '_blank': 'Yes'},
-            jQuery.trim(a.attr('target')),
+            {
+                '': 'No',
+                '_blank': 'Yes'
+            },
+            (tempLink.target ? tempLink.target : ''),
             true
         );
 
-        var cssClassInput = $.dialogIn(
+        var isAllowedServicesConfig = services.isAllowedServices;
+        var isAllowedServiceOptions = {};
+
+        for (var isAllowedServiceAlias in isAllowedServicesConfig) {
+            isAllowedServiceOptions[isAllowedServiceAlias] = isAllowedServicesConfig[isAllowedServiceAlias].displayName;
+        }
+
+        var isAllowedServiceInput = jQuery.dialogIn(
             'select',
-            'Display Style',
-            {'': 'Normal', 'heading': 'Heading', 'bold': 'Bold'},
-            currentClasses,
-            true
+            'Display Rule',
+            isAllowedServiceOptions,
+            (tempLink.isAllowedService ? tempLink.isAllowedService : 'default'),
+            false
+        );
+
+        customDialogs.createEditButton(
+            isAllowedServiceInput,
+            tempLink
+        );
+
+        isAllowedServiceInput.change(
+            function () {
+                customDialogs.createEditButton(
+                    isAllowedServiceInput,
+                    tempLink
+                );
+            }
+        );
+
+        var renderServicesConfig = services.renderServices;
+        var renderServiceOptions = {};
+
+        for (var renderServiceAlias in renderServicesConfig) {
+            renderServiceOptions[renderServiceAlias] = renderServicesConfig[renderServiceAlias].displayName;
+        }
+
+        var renderServiceInput = jQuery.dialogIn(
+            'select',
+            'Display Type',
+            renderServiceOptions,
+            (tempLink.renderService ? tempLink.renderService : 'default'),
+            false
+        );
+
+        customDialogs.createEditButton(
+            renderServiceInput,
+            tempLink
+        );
+
+        renderServiceInput.change(
+            function () {
+                customDialogs.createEditButton(
+                    renderServiceInput,
+                    tempLink
+                );
+            }
+        );
+
+        var cssClassInput = jQuery.dialogIn(
+            'text',
+            'Custom CSS Class',
+            tempLink.class
         );
 
         //Create and show our edit dialog
         var form = jQuery('<form></form>')
             .addClass('simple')
-            .append(text, href, aTarget, cssClassInput)
-            .dialog({
-                title: 'Properties',
-                modal: true,
-                width: 620,
-                close: function () {
-                    if (deleteOnClose && !okClicked) {
-                        // Remove the new li that was created if the user clicks
-                        // cancel
-                        li.remove();
-                        me.refresh();
-                    }
-                },
-                buttons: {
-                    Cancel: function () {
-                        jQuery(this).dialog("close");
+            .append(
+                text,
+                href,
+                aTarget,
+                isAllowedServiceInput,
+                renderServiceInput,
+                cssClassInput
+            )
+            .dialog(
+                {
+                    title: 'Properties',
+                    modal: true,
+                    width: 620,
+                    close: function () {
+                        render(self.saveData);
                     },
-                    Ok: function() {
-                        //Get user-entered data from form
-                        a.find("span.linkText").text(text.val());
-                        a.attr('href', href.val());
-                        a.attr('target', aTarget.val());
+                    buttons: {
+                        Cancel: function () {
+                            jQuery(this).dialog("close");
+                        },
+                        Ok: function () {
+                            link.display = text.val();
+                            link.href = href.val();
+                            link.target = aTarget.val();
 
-                        li.removeClass(currentClasses);
-                        li.addClass(cssClassInput.val());
+                            link.isAllowedService = isAllowedServiceInput.val();
+                            link.renderService = renderServiceInput.val();
+                            link.class = cssClassInput.val();
+                            // For the custom dialogs
+                            link.options = tempLink.options;
 
-                        //Put this in a closure so modifySubMenu can call it
-                        var button = this;
-                        jQuery(button).dialog("close");
-                        me.refresh();
+                            var button = this;
+                            jQuery(button).dialog("close");
+                            render(self.saveData);
+                        }
                     }
                 }
-            });
-
+            );
     };
-
-    me.showPermissionsDialog = function (li) {
-
-        var permissions = li.attr('data-permissions');
-        var selectedRoles = permissions.split(",");
-
-        var selected = {};
-
-        $.each(selectedRoles, function(i,v) {
-            selected[v] = v;
-        });
-
-        rcmShowPermissions(selected, function(roles){
-            if (roles.length > 1) {
-                li.attr('data-permissions', roles.join(','));
-            } else {
-                li.attr('data-permissions', roles[0]);
-            }
-        });
-    };
-
-    me.getLiClasses = function(li, save) {
-
-        var cloneLi = jQuery(li).clone();
-
-        jQuery.each(me.liClassesToFilter, function(i, v) {
-            jQuery(cloneLi).removeClass(v);
-        });
-
-        if (!save) {
-            jQuery.each(me.liClassesForLogin, function(i, v) {
-                jQuery(cloneLi).removeClass(v);
-            });
-        }
-
-        return cloneLi.attr('class');
-    };
-
-    me.getAClasses = function(a) {
-
-        var cloneA = jquery(a).clone();
-
-        jQuery.each(me.aClassesToFilter, function(i, v) {
-            jQuery(cloneA).removeClass(v);
-        });
-
-        return cloneA.attr('class');
-    };
-
-    me.refresh = function() {
-        me.addRightClickMenu();
-        jQuery(me.containerSelector).find('a').click(false);
-
-        try {
-            //Prevent links from being arrangeable
-            container.find('ul').sortable('destroy');
-        } catch(e){
-            //do nothing, getting here just means we weren't in edit mode before
-        }
-
-        //Make links arrangeable
-        container.find('ul').sortable({
-            connectWith: me.containerSelector + ' ul'
-        });
-
-        jQuery(me.containerSelector).find("a.dropdown-toggle").unbind('click');
-
-        jQuery(me.containerSelector).find('li').dblclick(function(){me.showEditDialog(jQuery(this),false)})
-    }
 };
 
 

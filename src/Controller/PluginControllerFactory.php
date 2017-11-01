@@ -4,8 +4,7 @@ namespace RcmDynamicNavigation\Controller;
 
 use Psr\Container\ContainerInterface;
 use RcmDynamicNavigation\Api\Acl\IsAllowedAdmin;
-use RcmDynamicNavigation\Api\Acl\IsAllowedIfLoggedIn;
-use RcmDynamicNavigation\Api\Acl\IsAllowedRoles;
+use RcmDynamicNavigation\Api\Acl\IsLinkAllowed;
 use Zend\Mvc\Controller\ControllerManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -29,9 +28,7 @@ class PluginControllerFactory
         $config = $serviceContainer->get('Config');
 
         return new PluginController(
-            $serviceContainer->get(IsAllowedAdmin::class),
-            $serviceContainer->get(IsAllowedIfLoggedIn::class),
-            $serviceContainer->get(IsAllowedRoles::class),
+            $serviceContainer->get(IsLinkAllowed::class),
             $config
         );
     }

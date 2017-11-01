@@ -3,18 +3,7 @@
 namespace RcmDynamicNavigation;
 
 /**
- * ZF2 Module Config.  Required by ZF2
- *
- * ZF2 requires a Module.php file to load up all the Module Dependencies.  This
- * file has been included as part of the ZF2 standards.
- *
- * @category  Reliv
- * @package   RcmDynamicNavigation
- * @author    Westin Shafer <wshafer@relivinc.com>
- * @copyright 2015 Reliv International
- * @license   License.txt New BSD License
- * @version   Release: 1.0
- * @link      https://github.com/reliv
+ * @author James Jervis - https://github.com/jerv13
  */
 class Module
 {
@@ -27,6 +16,33 @@ class Module
      */
     public function getConfig()
     {
-        return include __DIR__ . '/../config/module.config.php';
+        $moduleConfig = new ModuleConfig();
+
+        $config = $moduleConfig->__invoke();
+
+        $config['service_manager'] = $config['dependencies'];
+        unset($config['dependencies']);
+
+        $config['controllers'] = [
+            'factories' => [
+                'RcmDynamicNavigation'
+                => \RcmDynamicNavigation\Controller\PluginControllerFactory::class,
+            ]
+        ];
+
+        $config['view_helpers'] = [
+            'factories' => [
+                'rcmDynamicLinksRenderLinks'
+                => \RcmDynamicNavigation\View\RenderLinksFactory::class,
+            ],
+        ];
+
+        $config['view_manager'] = [
+            'template_path_stack' => [
+                __DIR__ . '/../view',
+            ],
+        ];
+
+        return $config;
     }
 }

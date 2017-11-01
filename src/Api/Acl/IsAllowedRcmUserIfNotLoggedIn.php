@@ -8,7 +8,7 @@ use RcmUser\Api\Authentication\GetIdentity;
 /**
  * @author James Jervis - https://github.com/jerv13
  */
-class IsAllowedRcmUserIfLoggedIn implements IsAllowed
+class IsAllowedRcmUserIfNotLoggedIn implements IsAllowed
 {
     /**
      * @var GetIdentity
@@ -39,6 +39,6 @@ class IsAllowedRcmUserIfLoggedIn implements IsAllowed
             $request
         );
 
-        return !empty($currentUser);
+        return empty($currentUser);
     }
 }

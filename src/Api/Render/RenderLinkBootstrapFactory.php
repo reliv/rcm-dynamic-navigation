@@ -3,19 +3,22 @@
 namespace RcmDynamicNavigation\Api\Render;
 
 use Psr\Container\ContainerInterface;
+use RcmDynamicNavigation\Api\GetRenderServiceConfigOption;
 
 /**
  * @author James Jervis - https://github.com/jerv13
  */
-class RenderLinksDefaultFactory
+class RenderLinkBootstrapFactory
 {
     /**
      * @param ContainerInterface $serviceContainer
      *
-     * @return RenderLinksDefault
+     * @return RenderLinkBootstrap
      */
     public function __invoke($serviceContainer)
     {
-        return new RenderLinksDefault();
+        return new RenderLinkBootstrap(
+            $serviceContainer->get(GetRenderServiceConfigOption::class)
+        );
     }
 }

@@ -3,7 +3,7 @@
 namespace RcmDynamicNavigation\Api\Acl;
 
 use Psr\Container\ContainerInterface;
-use RcmUser\Service\RcmUserService;
+use RcmUser\Api\Acl\HasRoleBasedAccess;
 
 /**
  * @author James Jervis - https://github.com/jerv13
@@ -18,7 +18,7 @@ class IsAllowedRcmUserRolesFactory
     public function __invoke($serviceContainer)
     {
         return new IsAllowedRcmUserRoles(
-            $serviceContainer->get(RcmUserService::class)
+            $serviceContainer->get(HasRoleBasedAccess::class)
         );
     }
 }

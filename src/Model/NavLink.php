@@ -3,89 +3,106 @@
 namespace RcmDynamicNavigation\Model;
 
 /**
- * Nav link data model
- *
- * Data model for the Dynamic navigation plugin for the CMS
- *
- * @category  Reliv
- * @package   RcmDynamicNavigation
- * @author    Westin Shafer <wshafer@relivinc.com>
- * @copyright 2015 Reliv International
- * @license   License.txt New BSD License
- * @version   Release: 1.0
- * @link      http://github.com/reliv
+ * @author James Jervis - https://github.com/jerv13
  */
 class NavLink
 {
-    const LOGIN_CLASS = 'rcmDynamicNavigationLogin';
-    const LOGOUT_CLASS = 'rcmDynamicNavigationLogout';
-    const LOGIN_MAIN_CLASS = 'rcmDynamicNavigationAuthMenuItem';
-
     /** @var string */
-    protected $href;
-
-    /** @var array  */
-    protected $class = [];
-
-    /** @var array  */
-    protected $systemClass = [];
-
-    /** @var string */
-    protected $target;
+    protected $id;
 
     /** @var string */
     protected $display;
 
-    /** @var array  */
-    protected $permissions = [];
+    /** @var string */
+    protected $href;
 
-    /** @var array  */
+    /** @var string */
+    protected $target;
+
+    /** @var array */
     protected $links = [];
 
+    /** @var array */
+    protected $class = [];
+
+    /** @var string */
+    protected $isAllowedService = 'default';
+
+    /** @var string */
+    protected $renderService = 'default';
+
+    protected $options = [];
+
     /**
-     * Constructor
-     *
-     * @param array|null $data Initial Data array to populate object with
+     * @param string $id
+     * @param string $display
+     * @param string $href
+     * @param string $target
+     * @param array  $links
+     * @param string $class
+     * @param string $isAllowedService
+     * @param string $renderService
+     * @param array  $options
      */
-    public function __construct(array $data = null)
-    {
-        if (!empty($data) && is_array($data)) {
-            $this->populate($data);
-        }
+    public function __construct(
+        string $id,
+        string $display,
+        string $href,
+        string $target = '',
+        array $links = [],
+        string $class = '',
+        string $isAllowedService = 'default',
+        string $renderService = 'default',
+        array $options = []
+    ) {
+        $this->setId($id);
+        $this->setDisplay($display);
+        $this->setHref($href);
+        $this->setTarget($target);
+        $this->setLinks($links);
+        $this->setClass($class);
+
+        $this->setIsAllowedService($isAllowedService);
+        $this->setRenderService($renderService);
     }
 
     /**
-     * Populate object properties from data array
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
      *
-     * @param array $data Data array to populate the object with
+     * @return void
+     * @throws \Exception
+     */
+    public function setId(string $id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDisplay()
+    {
+        return $this->display;
+    }
+
+    /**
+     * Set the text to display
+     *
+     * @param string $display Text to display
      *
      * @return void
      */
-    public function populate(array $data)
+    public function setDisplay($display)
     {
-        if (!empty($data['class'])) {
-            $this->setClass($data['class']);
-        }
-
-        if (!empty($data['href'])) {
-            $this->setHref($data['href']);
-        }
-
-        if (!empty($data['target'])) {
-            $this->setTarget($data['target']);
-        }
-
-        if (!empty($data['display'])) {
-            $this->setDisplay($data['display']);
-        }
-
-        if (!empty($data['permissions'])) {
-            $this->setPermissions($data['permissions']);
-        }
-
-        if (!empty($data['links']) && is_array($data['links'])) {
-            $this->setLinks($data['links']);
-        }
+        $this->display = $display;
     }
 
     /**
@@ -108,6 +125,80 @@ class NavLink
     public function setHref($href)
     {
         $this->href = $href;
+    }
+
+    /**
+     * Get the link Target
+     *
+     * @return string
+     */
+    public function getTarget()
+    {
+        return $this->target;
+    }
+
+    /**
+     * Set the link target
+     *
+     * @param string $target Target for link
+     *
+     * @return void
+     */
+    public function setTarget($target)
+    {
+        $this->target = $target;
+    }
+
+    /**
+     * Get Sublinks
+     *
+     * @return array
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * Set sublinks
+     *
+     * @param NavLink[] $links Sublinks to add
+     *
+     * @return void
+     */
+    public function setLinks(array $links)
+    {
+        $this->links = [];
+
+        foreach ($links as &$link) {
+            $this->addLink($link);
+        }
+    }
+
+    /**
+     * Add a link
+     *
+     * @param NavLink|array $link Link to add
+     *
+     * @return void
+     */
+    public function addLink(NavLink $link)
+    {
+        $this->links[] = $link;
+    }
+
+    /**
+     * Does this object have sub links?
+     *
+     * @return bool
+     */
+    public function hasLinks()
+    {
+        if (!empty($this->links)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -153,221 +244,50 @@ class NavLink
     }
 
     /**
-     * Get System Class
-     *
-     * @return string|null
-     */
-    public function getSystemClass()
-    {
-        return implode(" ", $this->systemClass);
-    }
-
-    /**
-     * Set System Class
-     *
-     * @param string $class Class to set
-     *
-     * @return void
-     */
-    public function setSystemClass($class)
-    {
-        $this->systemClass = [];
-
-        $classes = explode(" ", $class);
-
-        foreach ($classes as $classToAdd) {
-            $this->addSystemClass($classToAdd);
-        }
-    }
-
-    /**
-     * Add a system class.
-     *
-     * @param string $class Class to add
-     *
-     * @return void
-     */
-    public function addSystemClass($class)
-    {
-        if (!empty($class)) {
-            $this->systemClass[] = $class;
-        }
-    }
-
-    /**
-     * Get the link Target
-     *
      * @return string
      */
-    public function getTarget()
+    public function getIsAllowedService(): string
     {
-        return $this->target;
+        return $this->isAllowedService;
     }
 
     /**
-     * Set the link target
-     *
-     * @param string $target Target for link
-     *
-     * @return void
+     * @param string $isAllowedService
      */
-    public function setTarget($target)
+    public function setIsAllowedService(string $isAllowedService)
     {
-        $this->target = $target;
+        $this->isAllowedService = $isAllowedService;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getDisplay()
+    public function getRenderService(): string
     {
-        return $this->display;
+        return $this->renderService;
     }
 
     /**
-     * Set the text to display
-     *
-     * @param mixed $display Text to display
-     *
-     * @return void
+     * @param string $renderService
      */
-    public function setDisplay($display)
+    public function setRenderService(string $renderService)
     {
-        $this->display = $display;
+        $this->renderService = $renderService;
     }
 
     /**
-     * Get the link permissions
-     *
      * @return array
      */
-    public function getPermissions()
+    public function getOptions(): array
     {
-        return $this->permissions;
+        return $this->options;
     }
 
     /**
-     * Set the permission for the link
-     *
-     * @param string|array $permissions Permissions
-     *
-     * @return void
+     * @param array $options
      */
-    public function setPermissions($permissions)
+    public function setOptions(array $options)
     {
-        if (is_array($permissions)) {
-            $this->permissions = $permissions;
-            return;
-        }
-
-        $this->permissions = [];
-
-        $permissionsArray = explode(',', $permissions);
-
-        foreach ($permissionsArray as $permissionItem) {
-            $this->addPermission($permissionItem);
-        }
-    }
-
-    /**
-     * Add a permission
-     *
-     * @param string $permission Permission to add
-     *
-     * @return void
-     */
-    public function addPermission($permission)
-    {
-        $this->permissions[] = trim($permission);
-    }
-
-
-
-    /**
-     * Get Sublinks
-     *
-     * @return array
-     */
-    public function getLinks()
-    {
-        return $this->links;
-    }
-
-    /**
-     * Set sublinks
-     *
-     * @param array $links Sublinks to add
-     *
-     * @return void
-     */
-    public function setLinks(array $links)
-    {
-        $this->links = [];
-
-        foreach ($links as &$link) {
-            $this->addLink($link);
-        }
-    }
-
-    /**
-     * Add a link
-     *
-     * @param NavLink|array $link Link to add
-     *
-     * @return void
-     */
-    public function addLink($link)
-    {
-        if ($link instanceof self) {
-            $this->links[] = $link;
-        } else {
-            $this->links[] = new self($link);
-        }
-    }
-
-    /**
-     * Is this a login link?
-     *
-     * @return bool
-     */
-    public function isLoginLink()
-    {
-        $class = $this->getClass();
-
-        if (strpos($class, self::LOGIN_CLASS) === false) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Is this a logout link?
-     *
-     * @return bool
-     */
-    public function isLogoutLink()
-    {
-        $class = $this->getClass();
-
-        if (strpos($class, self::LOGOUT_CLASS) === false) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Does this object have sub links?
-     *
-     * @return bool
-     */
-    public function hasLinks()
-    {
-        if (!empty($this->links)) {
-            return true;
-        }
-
-        return false;
+        $this->options = $options;
     }
 }

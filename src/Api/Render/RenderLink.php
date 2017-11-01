@@ -8,21 +8,12 @@ use RcmDynamicNavigation\Model\NavLink;
 /**
  * @author James Jervis - https://github.com/jerv13
  */
-interface RenderLinks
+interface RenderLink
 {
-    const OPTION_ADMIN_MODE = 'adminMode';
-    const OPTION_DEPTH = 'depth';
-    const OPTION_ID = 'id';
-
-    const DEFAULT_DEPTH = 0;
-
-    const MENU_CLASS = 'menu';
-    const DEPTH_CLASS = 'depth-';
-    const ITEM_CLASS = 'menu-item';
-
+    const LINK_CLASS = 'menu-link';
     /**
      * @param ServerRequestInterface $request
-     * @param NavLink[]              $links
+     * @param NavLink                $link
      * @param array                  $options
      *
      * @return string
@@ -30,7 +21,7 @@ interface RenderLinks
      */
     public function __invoke(
         ServerRequestInterface $request,
-        array $links,
+        NavLink $link,
         array $options = []
     ): string;
 }
