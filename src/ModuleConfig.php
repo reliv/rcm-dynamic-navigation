@@ -166,24 +166,14 @@ class ModuleConfig
                         'default' => [
                             'displayName' => 'Bootstrap rendering (default)',
                             'service' => \RcmDynamicNavigation\Api\Render\RenderLinkBootstrap::class,
-                            'options' => [
-                                'class' => 'rcm-dynamic-navigation-default',
-                            ],
+                            'options' => [],
                         ],
-                        //'log-in' => [
-                        //    'displayName' => 'Log in Bootstrap rendering',
+                        //'example' => [
+                        //    'displayName' => 'Example',
                         //    'service' => \RcmDynamicNavigation\Api\Render\RenderLinkBootstrap::class,
                         //    'options' => [
-                        //        'class' => 'rcmDynamicNavigationLogin rcmDynamicNavigationAuthMenuItem',
-                        //        'href' => '/login',
-                        //    ],
-                        //],
-                        //'log-out' => [
-                        //    'displayName' => 'Log out Bootstrap rendering',
-                        //    'service' => \RcmDynamicNavigation\Api\Render\RenderLinkBootstrap::class,
-                        //    'options' => [
-                        //        'class' => 'rcmDynamicNavigationLogout rcmDynamicNavigationAuthMenuItem',
-                        //        'href' => '/login?logout=1',
+                        //        'class' => 'my class',
+                        //        'href' => '/example',
                         //    ],
                         //],
                     ],
