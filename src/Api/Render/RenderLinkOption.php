@@ -40,21 +40,24 @@ class RenderLinkOption implements RenderLink
         ServerRequestInterface $request,
         NavLink $link,
         array $options = []
-    ): string {
+    ): string
+    {
         $renderServiceAlias = $link->getRenderService();
 
         $renderServiceConfig = $this->getRenderServiceConfig->__invoke(
             $renderServiceAlias
         );
 
-        $renderServiceName = Options::get(
+        if (empty($renderServiceConfig)) {
+            $renderServiceConfig = $this->getRenderServiceConfig->__invoke(
+                'default'
+            );
+        }
+
+        $renderServiceName = Options::getRequired(
             $renderServiceConfig,
             'service'
         );
-
-        if (empty($renderServiceName)) {
-            $renderServiceName = 'default';
-        }
 
         $renderServiceOptions = Options::get(
             $renderServiceConfig,

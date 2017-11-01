@@ -44,14 +44,16 @@ class IsLinkAllowedDefault implements IsLinkAllowed
             $isAllowedServiceAlias
         );
 
+        if (empty($isAllowedServiceConfig)) {
+            $isAllowedServiceConfig = $this->getIsAllowedServiceConfig->__invoke(
+                'default'
+            );
+        }
+
         $isAllowedServiceName = Options::getRequired(
             $isAllowedServiceConfig,
             'service'
         );
-
-        if (empty($isAllowedServiceName)) {
-            $isAllowedServiceName = 'default';
-        }
 
         $isAllowedServiceOptions = Options::get(
             $isAllowedServiceConfig,
