@@ -19,7 +19,6 @@ class ApiAdminControllerFactory
      */
     public function __invoke($serviceContainer)
     {
-
         return new ApiAdminController(
             $serviceContainer->get(IsAllowedAdmin::class),
             $serviceContainer->get(GetIsAllowedServicesConfig::class),

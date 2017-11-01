@@ -16,23 +16,16 @@ use Zend\Diactoros\ServerRequestFactory;
  */
 class PluginController extends BaseController implements PluginInterface
 {
-    /**
-     * @var IsAllowedAdmin
-     */
-    protected $isAllowedAdmin;
     protected $isLinkAllowed;
 
     /**
-     * @param IsAllowedAdmin $isAllowedAdmin
      * @param IsLinkAllowed  $isLinkAllowed
      * @param array          $config
      */
     public function __construct(
-        IsAllowedAdmin $isAllowedAdmin,
         IsLinkAllowed $isLinkAllowed,
         $config
     ) {
-        $this->isAllowedAdmin = $isAllowedAdmin;
         $this->isLinkAllowed = $isLinkAllowed;
 
         parent::__construct($config, 'RcmDynamicNavigation');
@@ -60,8 +53,6 @@ class PluginController extends BaseController implements PluginInterface
         );
 
         $view->setVariable('links', $allowedLinks);
-        // NOT USED
-        $view->setVariable('isAdmin', $this->isAllowedAdmin->__invoke($request));
 
         return $view;
     }

@@ -61,10 +61,10 @@ class RenderLinkBootstrap implements RenderLink
         }
 
         $html .= '>';
-        $html .= "\n" . '<span class="linkText">' . $link->getDisplay() . '</span>' . "\n";
+        $html .= '<span class="linkText">' . $link->getDisplay() . '</span>';
 
         if ($link->hasLinks()) {
-            $html .= "\n" . '<span class="caret"></span>' . "\n";
+            $html .= '<span class="caret"></span>';
         }
 
         $html .= "</a>\n";

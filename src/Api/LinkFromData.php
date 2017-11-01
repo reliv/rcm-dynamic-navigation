@@ -32,7 +32,7 @@ class LinkFromData
         $id = Options::get(
             $linkData,
             'id',
-            GetGuidV4::invoke()
+            'BC:' . GetGuidV4::invoke() // @BC for missing Ids
         );
 
         return new NavLink(

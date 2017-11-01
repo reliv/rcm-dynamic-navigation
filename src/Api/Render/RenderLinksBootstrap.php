@@ -41,12 +41,6 @@ class RenderLinksBootstrap implements RenderLinks
         array $options = []
     ): string
     {
-        $adminMode = Options::get(
-            $options,
-            self::OPTION_ADMIN_MODE,
-            false
-        );
-
         $depth = Options::get(
             $options,
             self::OPTION_DEPTH,

@@ -28,7 +28,6 @@ class PluginControllerFactory
         $config = $serviceContainer->get('Config');
 
         return new PluginController(
-            $serviceContainer->get(IsAllowedAdmin::class),
             $serviceContainer->get(IsLinkAllowed::class),
             $config
         );

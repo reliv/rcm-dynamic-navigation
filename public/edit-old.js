@@ -121,7 +121,7 @@ var RcmDynamicNavigationEditOld = function (instanceId, container, pluginHandler
 
         return myLinkData;
     };
-
+// #relivNavBar
 
     me.addItem = function (item) {
         var selectedLi = jQuery(item);

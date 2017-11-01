@@ -19,7 +19,11 @@ class LinksFromData
     ): array {
         $links = [];
 
-        foreach ($linksData as $linkData) {
+        foreach ($linksData as $key => $linkData) {
+            if(!is_array($linkData)) {
+                var_dump($key, $linkData);
+                continue;
+            }
             $links[] = LinkFromData::invoke(
                 $linkData
             );

@@ -51,7 +51,6 @@ class RenderLinks extends AbstractHelper
             $request,
             $links,
             [
-                \RcmDynamicNavigation\Api\Render\RenderLinks::OPTION_ADMIN_MODE => false, // NOT required
                 \RcmDynamicNavigation\Api\Render\RenderLinks::OPTION_ID => $id,
             ]
         );
