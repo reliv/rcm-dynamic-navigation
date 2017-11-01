@@ -47,33 +47,37 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
      */
     public function setup()
     {
-        $this->link = new NavLink();
+        $this->link = new NavLink('test', 'Test', '#');
     }
 
     /**
      * Get a config array for tests
      *
-     * @param string $display     Display
-     * @param string $class       Class
-     * @param string $href        Href
-     * @param string $target      Target
-     * @param string $permissions Permissions
+     * @param string $display Display
+     * @param string $class   Class
+     * @param string $href    Href
+     * @param string $target  Target
+     * @param string $options Options
      *
-     * @return array
+     * @return NavLink
      */
-    public function getDataArray(
+    public function buildUnit(
         $display,
         $class = 'testClass',
         $href = '/test-page',
         $target = '_SELF',
-        $permissions = null
+        $options = []
     ) {
-        return array(
-            'class' => $class,
-            'href' => $href,
-            'target' => $target,
-            'display' => $display,
-            'permissions' => $permissions
+        return new NavLink(
+            'test',
+            $display,
+            $href,
+            $target,
+            [],
+            $class,
+            'default',
+            'default',
+            $options
         );
     }
 
@@ -96,78 +100,8 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructorWithDefaultInstanceConfig()
     {
-        $config = $this->getDataArray('Test Link');
-        $link = new NavLink($config);
+        $link = $this->buildUnit('Test Link');
         $this->assertInstanceOf('\RcmDynamicNavigation\Model\NavLink', $link);
-    }
-
-    /**
-     * Test Populate
-     *
-     * @return void
-     * @covers \RcmDynamicNavigation\Model\NavLink::populate
-     */
-    public function testPopulate()
-    {
-        $mainClass = 'mainLink';
-        $mainDisplay = 'Test Link';
-        $mainHref = '/main-page';
-        $mainTarget = '_BLANK';
-        $mainPermissions = array(
-            'user1',
-            'user2',
-            'user3'
-        );
-
-        $subClass = 'subLink';
-        $subDisplay = 'Test Sub Link';
-        $subHref = '/sub-page';
-        $subTarget = '_new';
-        $subPermissions = array(
-            'user4',
-            'user5',
-            'user6'
-        );
-
-
-        $config = $this->getDataArray(
-            $mainDisplay,
-            $mainClass,
-            $mainHref,
-            $mainTarget,
-            implode(',', $mainPermissions)
-        );
-
-        $extraLink = $this->getDataArray(
-            $subDisplay,
-            $subClass,
-            $subHref,
-            $subTarget,
-            implode(',', $subPermissions)
-        );
-
-        $config['links'] = array($extraLink);
-
-        $this->link->populate($config);
-
-        $this->assertEquals($mainDisplay, $this->link->getDisplay());
-        $this->assertEquals($mainClass, $this->link->getClass());
-        $this->assertEquals($mainHref, $this->link->getHref());
-        $this->assertEquals($mainTarget, $this->link->getTarget());
-        $this->assertEquals($mainPermissions, $this->link->getPermissions());
-
-        $links = $this->link->getLinks();
-
-        $this->assertCount(1, $links);
-
-        /** @var NavLink $link */
-        $link = array_pop($links);
-
-        $this->assertEquals($subDisplay, $link->getDisplay());
-        $this->assertEquals($subClass, $link->getClass());
-        $this->assertEquals($subHref, $link->getHref());
-        $this->assertEquals($subTarget, $link->getTarget());
-        $this->assertEquals($subPermissions, $link->getPermissions());
     }
 
     /**
@@ -241,67 +175,49 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Add And Get Permission
+     * Test Set And Get Options
      *
      * @return void
-     * @covers \RcmDynamicNavigation\Model\NavLink::getPermissions
-     * @covers \RcmDynamicNavigation\Model\NavLink::addPermission
+     * @covers \RcmDynamicNavigation\Model\NavLink::getOptions
+     * @covers \RcmDynamicNavigation\Model\NavLink::setOptions
      */
-    public function testAddAndGetPermission()
+    public function testSetAndGetOptions()
     {
-        $permission = 'user1';
-        $this->link->addPermission($permission);
-
-        $result = $this->link->getPermissions();
-
-        $this->assertCount(1, $result);
-        $this->assertContains($permission, $result);
-    }
-
-    /**
-     * Test Set And Get Permissions
-     *
-     * @return void
-     * @covers \RcmDynamicNavigation\Model\NavLink::getPermissions
-     * @covers \RcmDynamicNavigation\Model\NavLink::setPermissions
-     */
-    public function testSetAndGetPermissions()
-    {
-        $permissions = array(
+        $options = array(
             'user1',
             'user2',
             'user3'
         );
 
-        $this->link->setPermissions($permissions);
+        $this->link->setOptions($options);
 
-        $result = $this->link->getPermissions();
+        $result = $this->link->getOptions();
 
         $this->assertCount(3, $result);
-        $this->assertEquals($permissions, $result);
+        $this->assertEquals($options, $result);
     }
 
     /**
-     * Test Set And Get Permissions From Csv
+     * Test Set And Get Options From Csv
      *
      * @return void
-     * @covers \RcmDynamicNavigation\Model\NavLink::getPermissions
-     * @covers \RcmDynamicNavigation\Model\NavLink::setPermissions
+     * @covers \RcmDynamicNavigation\Model\NavLink::getOptions
+     * @covers \RcmDynamicNavigation\Model\NavLink::setOptions
      */
-    public function testSetAndGetPermissionsFromCsv()
+    public function testSetAndGetOptionsFromCsv()
     {
-        $permissions = array(
+        $options = array(
             'user1',
             'user2',
             'user3'
         );
 
-        $this->link->setPermissions(implode(',', $permissions));
+        $this->link->setOptions($options);
 
-        $result = $this->link->getPermissions();
+        $result = $this->link->getOptions();
 
         $this->assertCount(3, $result);
-        $this->assertEquals($permissions, $result);
+        $this->assertEquals($options, $result);
     }
 
     /**
@@ -314,7 +230,7 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
     public function testAddAndGetLinks()
     {
         $display = 'SubLink';
-        $linkToAdd = new NavLink();
+        $linkToAdd = $this->buildUnit('NOPE Display');
         $linkToAdd->setDisplay($display);
         $this->link->addLink($linkToAdd);
 
@@ -324,7 +240,7 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
         /** @var NavLink $resultSublink */
         $resultSublink = array_pop($result);
 
-        $this->assertInstanceOf('\RcmDynamicNavigation\Model\NavLink', $resultSublink);
+        $this->assertInstanceOf(\RcmDynamicNavigation\Model\NavLink::class, $resultSublink);
 
         $this->assertEquals($display, $resultSublink->getDisplay());
     }
@@ -339,8 +255,8 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
     public function testAddAndGetLinksFromDataArray()
     {
         $display = 'SubLink';
-        $sublinkConfig = $this->getDataArray($display);
-        $this->link->addLink($sublinkConfig);
+        $sublink = $this->buildUnit($display);
+        $this->link->addLink($sublink);
 
         $result = $this->link->getLinks();
         $this->assertCount(1, $result);
@@ -348,7 +264,7 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
         /** @var NavLink $resultSublink */
         $resultSublink = array_pop($result);
 
-        $this->assertInstanceOf('\RcmDynamicNavigation\Model\NavLink', $resultSublink);
+        $this->assertInstanceOf(\RcmDynamicNavigation\Model\NavLink::class, $resultSublink);
 
         $this->assertEquals($display, $resultSublink->getDisplay());
     }
@@ -362,12 +278,9 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetAndGetLinks()
     {
-        $linkOne = new NavLink();
-        $linkOne->setDisplay('Display 1');
-        $linkTwo = new NavLink();
-        $linkTwo->setDisplay('Display 2');
-        $linkThree = new NavLink();
-        $linkThree->setDisplay('Display 3');
+        $linkOne = $this->buildUnit('Display 1');
+        $linkTwo = $this->buildUnit('Display 2');
+        $linkThree = $this->buildUnit('Display 3');
 
         $linkArray = array($linkOne, $linkTwo, $linkThree);
 
@@ -379,64 +292,6 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Is Login Link
-     *
-     * @return void
-     * @covers \RcmDynamicNavigation\Model\NavLink::isLoginLink
-     */
-    public function testIsLoginLink()
-    {
-        $class = 'someClass someAdditionalClass ';
-        $class .= NavLink::LOGIN_CLASS;
-
-        $this->link->setClass($class);
-
-        $this->assertTrue($this->link->isLoginLink());
-    }
-
-    /**
-     * Test Is Login Link False
-     *
-     * @return void
-     * @covers \RcmDynamicNavigation\Model\NavLink::isLoginLink
-     */
-    public function testIsLoginLinkFalse()
-    {
-        $class = 'someClass someAdditionalClass ';
-        $this->link->setClass($class);
-        $this->assertFalse($this->link->isLoginLink());
-    }
-
-    /**
-     * Test Is Logout Link
-     *
-     * @return void
-     * @covers \RcmDynamicNavigation\Model\NavLink::isLogoutLink
-     */
-    public function testIsLogoutLink()
-    {
-        $class = 'someClass someAdditionalClass ';
-        $class .= NavLink::LOGOUT_CLASS;
-
-        $this->link->setClass($class);
-
-        $this->assertTrue($this->link->isLogoutLink());
-    }
-
-    /**
-     * Test Is Logout Link False
-     *
-     * @return void
-     * @covers \RcmDynamicNavigation\Model\NavLink::isLogoutLink
-     */
-    public function testIsLogoutLinkFalse()
-    {
-        $class = 'someClass someAdditionalClass ';
-        $this->link->setClass($class);
-        $this->assertFalse($this->link->isLogoutLink());
-    }
-
-    /**
      * Test Has Links
      *
      * @return void
@@ -444,12 +299,9 @@ class NavLinkTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasLinks()
     {
-        $linkOne = new NavLink();
-        $linkOne->setDisplay('Display 1');
-        $linkTwo = new NavLink();
-        $linkTwo->setDisplay('Display 2');
-        $linkThree = new NavLink();
-        $linkThree->setDisplay('Display 3');
+        $linkOne = $this->buildUnit('Display 1');
+        $linkTwo = $this->buildUnit('Display 2');
+        $linkThree = $this->buildUnit('Display 3');
 
         $linkArray = array($linkOne, $linkTwo, $linkThree);
 

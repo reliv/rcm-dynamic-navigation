@@ -42,6 +42,7 @@ class NavLink
      * @param string $class
      * @param string $isAllowedService
      * @param string $renderService
+     * @param array  $options
      */
     public function __construct(
         string $id,
@@ -52,7 +53,7 @@ class NavLink
         string $class = '',
         string $isAllowedService = 'default',
         string $renderService = 'default',
-        array $options
+        array $options = []
     ) {
         $this->setId($id);
         $this->setDisplay($display);
