@@ -34,8 +34,7 @@ class RenderLinkBootstrap implements RenderLink
         ServerRequestInterface $request,
         NavLink $link,
         array $options = []
-    ): string
-    {
+    ): string {
         $target = $link->getTarget();
         $href = $link->getHref();
 

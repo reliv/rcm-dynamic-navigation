@@ -39,8 +39,7 @@ class RenderLinksBootstrap implements RenderLinks
         ServerRequestInterface $request,
         array $links,
         array $options = []
-    ): string
-    {
+    ): string {
         $depth = Options::get(
             $options,
             self::OPTION_DEPTH,

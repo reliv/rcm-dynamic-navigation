@@ -34,8 +34,7 @@ class IsAllowedRcmUserIfNotLoggedIn implements IsAllowed
     public function __invoke(
         ServerRequestInterface $request,
         array $options = []
-    ): bool
-    {
+    ): bool {
         $currentUser = $this->getIdentity->__invoke(
             $request
         );

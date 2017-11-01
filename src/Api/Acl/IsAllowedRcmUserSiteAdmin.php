@@ -63,8 +63,7 @@ class IsAllowedRcmUserSiteAdmin implements IsAllowedAdmin
     public function __invoke(
         ServerRequestInterface $request,
         array $options = []
-    ): bool
-    {
+    ): bool {
         /** @var Site $site */
         $site = $this->getSiteByRequest->__invoke(
             $request
