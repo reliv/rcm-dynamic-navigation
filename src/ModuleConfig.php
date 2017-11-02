@@ -187,9 +187,9 @@ class ModuleConfig
                     'middleware' => ApiAdminController::class,
                     'allowed_methods' => ['GET'],
                 ],
-                'rcm-dynamic-navigation.render-links' => [
-                    'name' => 'rcm-dynamic-navigation.render-links',
-                    'path' => '/rcm-dynamic-navigation/render-links',
+                'rcm-dynamic-navigation.render-links.id' => [
+                    'name' => 'rcm-dynamic-navigation.render-links.id',
+                    'path' => '/rcm-dynamic-navigation/render-links/{id}',
                     'middleware' => [
                         BodyParamsMiddleware::class,
                         RenderLinksController::class,

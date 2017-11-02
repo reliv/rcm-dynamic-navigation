@@ -51,6 +51,8 @@ class RenderLinksController
             );
         }
 
+        $id = $request->getAttribute('id');
+
         $data = $request->getParsedBody();
 
         $links = [];
@@ -65,7 +67,7 @@ class RenderLinksController
             $request,
             $links,
             [
-                \RcmDynamicNavigation\Api\Render\RenderLinks::OPTION_ID => 'RcmDynamicNavigation_TEMP',
+                \RcmDynamicNavigation\Api\Render\RenderLinks::OPTION_ID => 'RcmDynamicNavigation_' . $id,
             ]
         );
 

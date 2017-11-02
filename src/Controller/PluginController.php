@@ -5,7 +5,6 @@ namespace RcmDynamicNavigation\Controller;
 use Psr\Http\Message\ServerRequestInterface;
 use Rcm\Plugin\BaseController;
 use Rcm\Plugin\PluginInterface;
-use RcmDynamicNavigation\Api\Acl\IsAllowedAdmin;
 use RcmDynamicNavigation\Api\Acl\IsLinkAllowed;
 use RcmDynamicNavigation\Api\LinksFromData;
 use RcmDynamicNavigation\Model\NavLink;
@@ -19,8 +18,8 @@ class PluginController extends BaseController implements PluginInterface
     protected $isLinkAllowed;
 
     /**
-     * @param IsLinkAllowed  $isLinkAllowed
-     * @param array          $config
+     * @param IsLinkAllowed $isLinkAllowed
+     * @param array         $config
      */
     public function __construct(
         IsLinkAllowed $isLinkAllowed,
@@ -42,6 +41,9 @@ class PluginController extends BaseController implements PluginInterface
     public function renderInstance($instanceId, $instanceConfig)
     {
         $links = LinksFromData::invoke($instanceConfig['links']);
+//        if ($instanceId == 184016) {
+//            var_dump($links);
+//        }
 
         $request = ServerRequestFactory::fromGlobals();
 

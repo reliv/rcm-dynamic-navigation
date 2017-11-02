@@ -21,7 +21,7 @@ class LinkFromData
         array $linkData
     ): NavLink
     {
-        $linkData = self::buildBcOptions($linkData);
+        $linkData = self::buildBcData($linkData);
 
         $subLinksData = Options::get(
             $linkData,
@@ -79,12 +79,27 @@ class LinkFromData
      *
      * @return array
      */
-    protected static function buildBcOptions(array $linkData)
+    protected static function buildBcData(array $linkData)
     {
         $linkData = self::buildBcIsAllowedServiceOptions($linkData);
         $linkData = self::buildBcLogOutServiceOptions($linkData);
+        $linkData = self::buildBcCleanClasses($linkData);
 
         return self::buildBcLogInServiceOptions($linkData);
+    }
+
+    /**
+     * @param array $linkData
+     *
+     * @return array
+     */
+    protected static function buildBcCleanClasses(array $linkData)
+    {
+        if (!empty($linkData['class'])) {
+            $linkData['class'] = str_replace('ui-sortable-handle', '', $linkData['class']);
+        }
+
+        return $linkData;
     }
 
     /**
@@ -122,6 +137,7 @@ class LinkFromData
         if (strpos($class, self::LOGOUT_CLASS) !== false) {
             //$linkData['renderService'] = 'default';
             $linkData['isAllowedService'] = 'show-if-logged-in';
+            $linkData['class'] = str_replace(self::LOGOUT_CLASS, '', $linkData['class']);
         }
 
         return $linkData;
@@ -143,6 +159,7 @@ class LinkFromData
         if (strpos($class, self::LOGIN_CLASS) !== false) {
             //$linkData['renderService'] = 'default';
             $linkData['isAllowedService'] = 'show-if-not-logged-in';
+            $linkData['class'] = str_replace(self::LOGIN_CLASS, '', $linkData['class']);
         }
 
         return $linkData;
