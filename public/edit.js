@@ -121,7 +121,7 @@ var RcmDynamicNavigationLink = function (id) {
 var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
     var self = this;
     var services = null;
-    var renderEndpoint = '/rcm-dynamic-navigation/render-links';
+    var renderEndpoint = '/rcm-dynamic-navigation/render-links/';
     var servicesEndpoint = '/api/rcm-dynamic-navigation/services';
     var containerSelector = pluginHandler.model.getPluginContainerSelector(instanceId);
     var customDialogs = new RcmDynamicNavigationEditCustomDialogs();
@@ -147,7 +147,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
                 link.isAllowedService = 'show-if-not-logged-in';
             }
 
-            if (link.permissions) {
+            if (link.permissions && link.permissions !== '') {
                 link.isAllowedService = 'show-if-has-access-role';
                 link.options = {
                     'show-if-has-access-role': {
@@ -218,7 +218,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         jQuery.ajax(
             {
                 method: "POST",
-                url: renderEndpoint,
+                url: renderEndpoint + instanceId,
                 data: saveData
             }
         ).then(
@@ -244,6 +244,9 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
 
     };
 
+    /**
+     * createLink
+     */
     var createLink = function () {
         var link = new RcmDynamicNavigationLink(generateId());
 
@@ -259,6 +262,11 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         );
     };
 
+    /**
+     * @param parentLink
+     * @param subLink
+     * @param onComplete
+     */
     var createSubLink = function (parentLink, subLink, onComplete) {
         parentLink.links.push(
             subLink
@@ -267,12 +275,21 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         render(self.saveData, onComplete);
     };
 
+    /**
+     * @param linkToRemove
+     * @param onComplete
+     */
     var deleteLink = function (linkToRemove, onComplete) {
         self.saveData.links = removeLink(self.saveData.links, linkToRemove);
 
         render(self.saveData, onComplete);
     };
 
+    /**
+     * @param links
+     * @param linkToRemove
+     * @returns {Array}
+     */
     var removeLink = function (links, linkToRemove) {
         var cleanLinks = [];
 
@@ -392,8 +409,12 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
      * @param links
      */
     self.prepareUi = function (links) {
-        self.addRightClickMenu(links, 0);
-        jQuery(containerSelector).find('a').click(false);
+
+
+        var container = jQuery(containerSelector);
+
+        container.find('a').click(false);
+        container.find('a').attr('href', '#');
 
         try {
             //Prevent links from being arrangeable
@@ -414,13 +435,15 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
             }
         );
 
-        jQuery(containerSelector).find("a").unbind('click');
+        container.find("a").unbind('click');
 
-        jQuery(containerSelector).find('.menu-item').dblclick(
+        container.find('.menu-item').dblclick(
             function () {
                 self.showEditDialog(jQuery(this))
             }
         );
+
+        self.addRightClickMenu(links, 0);
     };
 
     /**
@@ -435,13 +458,14 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         var selector;
 
         for (var index in links) {
-            var adminMenuItems = self.getAdminMenuItems(links[index], depth);
-            selector = containerSelector + ' #' + links[index].id;
+            var link = links[index];
+            var adminMenuItems = self.getAdminMenuItems(link, depth);
+            selector = containerSelector + ' #' + link.id;
             self.addRightClickMenuDialog(selector, adminMenuItems);
 
-            if (links[index].links && links[index].links.length > 0) {
+            if (link.links && link.links.length > 0) {
                 var subDepth = depth + 1;
-                self.addRightClickMenu(links[index].links, subDepth)
+                self.addRightClickMenu(link.links, subDepth)
             }
         }
     };
