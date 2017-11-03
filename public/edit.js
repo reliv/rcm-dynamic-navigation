@@ -242,17 +242,12 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
 
                 elem.find('.menu-item');
 
-                window.setTimeout(
-                    function () {
-                        self.prepareUi(saveData.links);
+                self.prepareUi(saveData.links);
 
-                        if (typeof onComplete === 'function') {
-                            onComplete();
-                        }
-                        setLoading(namespace + '.render', 1);
-                    },
-                    1000
-                );
+                if (typeof onComplete === 'function') {
+                    onComplete();
+                }
+                setLoading(namespace + '.render', 1);
             }
         ).fail(
             function (error) {
