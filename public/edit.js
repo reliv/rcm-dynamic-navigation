@@ -125,6 +125,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
     var servicesEndpoint = '/api/rcm-dynamic-navigation/services';
     var containerSelector = pluginHandler.model.getPluginContainerSelector(instanceId);
     var customDialogs = new RcmDynamicNavigationEditCustomDialogs();
+    var namespace = 'rcmDynamicNavigationEdit.' + instanceId;
 
     self.saveData = null;
 
@@ -136,7 +137,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
     var prepareBc = function (links) {
         for (var index in links) {
             var link = links[index];
-            
+
             link.id = generateId();
 
             if (link.class && link.class.indexOf('rcmDynamicNavigationLogout') !== false) {
@@ -170,6 +171,16 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         }
 
         return links;
+    };
+
+    /**
+     * @param name
+     * @param amount
+     */
+    var setLoading = function (name, amount) {
+        if (rcmLoading) {
+            rcmLoading.setLoading(name, amount);
+        }
     };
 
     /**
@@ -215,6 +226,8 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         //     }
         // );
 
+        setLoading(namespace + '.render', 0);
+
         jQuery.ajax(
             {
                 method: "POST",
@@ -234,6 +247,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
                 if (typeof onComplete === 'function') {
                     onComplete();
                 }
+                setLoading(namespace + '.render', 1);
             }
         ).fail(
             function (error) {
@@ -248,6 +262,8 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
      * createLink
      */
     var createLink = function () {
+        setLoading(namespace + '.createLink', 0);
+
         var link = new RcmDynamicNavigationLink(generateId());
 
         self.saveData.links.push(
@@ -258,6 +274,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
             self.saveData,
             function () {
                 self.showEditDialog(link);
+                setLoading(namespace + '.createLink', 1);
             }
         );
     };
@@ -409,7 +426,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
      * @param links
      */
     self.prepareUi = function (links) {
-
+        setLoading(namespace + '.prepareUi', 0);
 
         var container = jQuery(containerSelector);
 
@@ -444,6 +461,8 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         );
 
         self.addRightClickMenu(links, 0);
+
+        setLoading(namespace + '.prepareUi', 1);
     };
 
     /**
@@ -454,13 +473,14 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         if (!depth) {
             depth = 0;
         }
+        setLoading(namespace + '.addRightClickMenu.' + depth, 0);
 
         var selector;
 
         for (var index in links) {
             var link = links[index];
             var adminMenuItems = self.getAdminMenuItems(link, depth);
-            selector = containerSelector + ' #' + link.id;
+            selector = containerSelector + ' #' + link.id; // OR + ' a';
             self.addRightClickMenuDialog(selector, adminMenuItems);
 
             if (link.links && link.links.length > 0) {
@@ -468,6 +488,8 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
                 self.addRightClickMenu(link.links, subDepth)
             }
         }
+
+        setLoading(namespace + '.addRightClickMenu.' + depth, 1);
     };
 
     /**
@@ -492,6 +514,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
      * @returns {{}}
      */
     self.getAdminMenuItems = function (link, depth) {
+        setLoading(namespace + '.getAdminMenuItems.' + depth, 0);
         var createSubMenuItem = {};
 
         if (depth == 0) {
@@ -559,7 +582,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
             createSubMenuItem,
             deleteLinkMenuItem
         );
-
+        setLoading(namespace + '.getAdminMenuItems.' + depth, 1);
         return adminMenuItems;
     };
 
