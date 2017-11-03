@@ -45,16 +45,9 @@
       "RcmDynamicNavigation\\": "src/"
     }
   },
-  "extra": {
-    "asset-pattern-skip-version": "(-patch*)",
-    "asset-vcs-driver-options": {
-      "github-no-api": true
-    }
-  },
-  "config": {
-    "asset-pattern-skip-version": "(-patch*)",
-    "asset-installer-paths": {
-      "bower-asset-library": "public/bower_components"
-    }
+  "suggest": {
+    "bower:rcm-loading": "For edit.js ^0.3.1",
+    "bower:jquery": "3.*",
+    "rcm-admin": "Required for edit.js ^0.3.1"
   }
 }
