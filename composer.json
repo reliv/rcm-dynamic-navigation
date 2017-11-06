@@ -29,6 +29,7 @@
   ],
   "require": {
     "php": ">=5.4.0",
+    "rcm/admin": "^1.23.2",
     "rcm/core": "^1.23.2",
     "rcm/core-js": "^1.1.4",
     "rcm/user": "^1.5.2",
@@ -48,6 +49,6 @@
   "suggest": {
     "bower:rcm-loading": "For edit.js ^0.3.1",
     "bower:jquery": "3.*",
-    "rcm-admin": "Required for edit.js ^0.3.1"
+    "rcm-admin": "Required for edit.js ^1.23.2"
   }
 }
