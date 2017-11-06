@@ -416,7 +416,17 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
      * @return {Object}
      */
     self.getSaveData = function () {
-        return self.saveData;
+        return new Promise(
+            function(resolve, reject) {
+                pluginHandler.getInstanceConfig().then(
+                    function (instanceConfig, defaultInstanceConfig) {
+                        self.saveData = instanceConfig;
+                        self.saveData.links = prepareBc(self.saveData.links);
+                        resolve(self.saveData);
+                    }
+                );
+            }
+        );
     };
 
     /** UI ==================================== **/
