@@ -127,6 +127,11 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
     var customDialogs = new RcmDynamicNavigationEditCustomDialogs();
     var namespace = 'rcmDynamicNavigationEdit.' + instanceId;
 
+    /**
+     * NOTE: we default with null so we can check if it has been initialized
+     *
+     * @type {null}
+     */
     self.saveData = null;
 
     /**
@@ -417,7 +422,12 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
      */
     self.getSaveData = function () {
         return new Promise(
-            function(resolve, reject) {
+            function (resolve, reject) {
+                if (self.saveData !== null) {
+                    resolve(self.saveData);
+                    return;
+                }
+                
                 pluginHandler.getInstanceConfig().then(
                     function (instanceConfig, defaultInstanceConfig) {
                         self.saveData = instanceConfig;
