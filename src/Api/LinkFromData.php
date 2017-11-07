@@ -9,9 +9,6 @@ use RcmDynamicNavigation\Model\NavLink;
  */
 class LinkFromData
 {
-    const LOGIN_CLASS = 'rcmDynamicNavigationLogin';
-    const LOGOUT_CLASS = 'rcmDynamicNavigationLogout';
-
     /**
      * @param array $linkData
      *
@@ -29,14 +26,11 @@ class LinkFromData
             []
         );
 
-        $id = Options::get(
-            $linkData,
-            'id',
-            'BC:' . GetGuidV4::invoke() // @BC for missing Ids
-        );
-
         return new NavLink(
-            $id,
+            Options::getRequired(
+                $linkData,
+                'id'
+            ),
             Options::getRequired(
                 $linkData,
                 'display'
@@ -75,91 +69,41 @@ class LinkFromData
     }
 
     /**
+     * @BC Fill missing values
+     *
      * @param array $linkData
      *
      * @return array
      */
     protected static function buildBcData(array $linkData)
     {
-        $linkData = self::buildBcIsAllowedServiceOptions($linkData);
-        $linkData = self::buildBcLogOutServiceOptions($linkData);
-        $linkData = self::buildBcCleanClasses($linkData);
-
-        return self::buildBcLogInServiceOptions($linkData);
-    }
-
-    /**
-     * @param array $linkData
-     *
-     * @return array
-     */
-    protected static function buildBcCleanClasses(array $linkData)
-    {
-        if (!empty($linkData['class'])) {
-            $linkData['class'] = str_replace('ui-sortable-handle', '', $linkData['class']);
+        if (empty($linkData['id'])) {
+            // @BC for missing Ids
+            $linkData['id'] = 'BC:' . GetGuidV4::invoke();
         }
 
-        return $linkData;
-    }
-
-    /**
-     * @param array $linkData
-     *
-     * @return array
-     */
-    protected static function buildBcIsAllowedServiceOptions(array $linkData)
-    {
-        if (!empty($linkData['permissions'])) {
-            $linkData['isAllowedService'] = 'show-if-has-access-role';
-            $linkData['isAllowedServiceOptions'] = [
-                'permissions' => $linkData['permissions'],
-            ];
-
-            unset($linkData['permissions']);
+        if (empty($linkData['target'])) {
+            $linkData['target'] = '';
         }
 
-        return $linkData;
-    }
-
-    /**
-     * @param array $linkData
-     *
-     * @return array
-     */
-    protected static function buildBcLogOutServiceOptions(array $linkData)
-    {
-        $class = '';
-
-        if (!empty($linkData['class'])) {
-            $class = $linkData['class'];
+        if (empty($linkData['class'])) {
+            $linkData['class'] = '';
         }
 
-        if (strpos($class, self::LOGOUT_CLASS) !== false) {
-            //$linkData['renderService'] = 'default';
-            $linkData['isAllowedService'] = 'show-if-logged-in';
-            $linkData['class'] = str_replace(self::LOGOUT_CLASS, '', $linkData['class']);
+        if (empty($linkData['links'])) {
+            $linkData['links'] = [];
         }
 
-        return $linkData;
-    }
-
-    /**
-     * @param array $linkData
-     *
-     * @return array
-     */
-    protected static function buildBcLogInServiceOptions(array $linkData)
-    {
-        $class = '';
-
-        if (!empty($linkData['class'])) {
-            $class = $linkData['class'];
+        if (empty($linkData['isAllowedService'])) {
+            $linkData['isAllowedService'] = 'default';
         }
 
-        if (strpos($class, self::LOGIN_CLASS) !== false) {
-            //$linkData['renderService'] = 'default';
-            $linkData['isAllowedService'] = 'show-if-not-logged-in';
-            $linkData['class'] = str_replace(self::LOGIN_CLASS, '', $linkData['class']);
+        if (empty($linkData['renderService'])) {
+            $linkData['renderService'] = 'default';
+        }
+
+        if (empty($linkData['options'])) {
+            $linkData['options'] = [];
         }
 
         return $linkData;

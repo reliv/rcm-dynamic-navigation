@@ -143,31 +143,34 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         for (var index in links) {
             var link = links[index];
 
-            link.id = generateId();
-
-            if (link.class && link.class.indexOf('rcmDynamicNavigationLogout') !== false) {
-                link.isAllowedService = 'show-if-logged-in';
+            if (!link.id) {
+                link.id = generateId();
             }
 
-            if (link.class && link.class.indexOf('rcmDynamicNavigationLogin') !== false) {
-                link.isAllowedService = 'show-if-not-logged-in';
+            if (!link.target) {
+                link.target = '';
             }
 
-            if (link.permissions && link.permissions !== '') {
-                link.isAllowedService = 'show-if-has-access-role';
-                link.options = {
-                    'show-if-has-access-role': {
-                        'permissions': link.permissions,
-                    }
-                };
+            if (!link.class) {
+                link.class = '';
+            }
+            // Clean out old and erroneous classes
+            link.class = link.class.replace('ui-sortable-handle', '');
+
+            if (!link.links) {
+                link.links = [];
+            }
+
+            if (!link.isAllowedService) {
+                link.isAllowedService = 'default';
+            }
+
+            if (!link.renderService) {
+                link.renderService = 'default';
             }
 
             if (!link.options) {
                 link.options = {};
-            }
-
-            if (!link.links) {
-                link.links = [];
             }
 
             if (link.links && link.links.length > 0) {
@@ -427,7 +430,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
                     resolve(self.saveData);
                     return;
                 }
-                
+
                 pluginHandler.getInstanceConfig().then(
                     function (instanceConfig, defaultInstanceConfig) {
                         self.saveData = instanceConfig;
