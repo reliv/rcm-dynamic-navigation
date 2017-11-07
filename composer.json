@@ -31,7 +31,6 @@
     "php": ">=5.4.0",
     "rcm/admin": "^1.23.2",
     "rcm/core": "^1.23.2",
-    "rcm/core-js": "^1.1.4",
     "rcm/user": "^1.5.2",
     "psr/http-message": "^1.0",
     "zendframework/zend-diactoros": "^1.5.0",
@@ -47,6 +46,7 @@
     }
   },
   "suggest": {
+    "rcm/core-js": "For jQuery and others ^1.1.4",
     "bower:rcm-loading": "For edit.js ^0.3.1",
     "bower:jquery": "3.*",
     "rcm-admin": "Required for edit.js ^1.23.2"
