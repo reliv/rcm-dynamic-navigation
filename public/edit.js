@@ -109,7 +109,7 @@ var RcmDynamicNavigationLink = function (id) {
     self.links = [];
     self.renderService = 'default';
     self.isAllowedService = 'default';
-    self.options = [];
+    self.options = {};
 };
 
 /**
@@ -156,6 +156,11 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
             }
             // Clean out old and erroneous classes
             link.class = link.class.replace('ui-sortable-handle', '');
+
+            // Clean out old permissions
+            if (link.permissions || link.hasOwnProperty('permissions')) {
+                delete link.permissions;
+            }
 
             if (!link.links) {
                 link.links = [];
@@ -453,8 +458,16 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
 
         var container = jQuery(containerSelector);
 
-        container.find('a').click(false);
-        container.find('a').attr('href', '#');
+        var actionElems = container.find('a');
+        actionElems.click(false);
+
+        actionElems.each(
+            function (index) {
+                var thisElem = jQuery(this);
+                var href = thisElem.attr('href');
+                thisElem.attr('href', '#' + href);
+            }
+        );
 
         try {
             //Prevent links from being arrangeable
