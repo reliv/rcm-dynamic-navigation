@@ -465,7 +465,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
             function (index) {
                 var thisElem = jQuery(this);
                 var href = thisElem.attr('href');
-                thisElem.attr('href', '#' + href);
+                thisElem.attr('href', "javascript:void('" + href + "')");
             }
         );
 
