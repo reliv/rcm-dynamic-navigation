@@ -31,19 +31,16 @@ class PluginController extends BaseController implements PluginInterface
     }
 
     /**
-     * Render the plugin
-     *
-     * @param int   $instanceId     Instance ID
-     * @param array $instanceConfig Instance Config
+     * @param int   $instanceId
+     * @param array $instanceConfig
      *
      * @return \Zend\View\Model\ViewModel
+     * @throws \Exception
      */
     public function renderInstance($instanceId, $instanceConfig)
     {
+
         $links = LinksFromData::invoke($instanceConfig['links']);
-//        if ($instanceId == 184016) {
-//            var_dump($links);
-//        }
 
         $request = ServerRequestFactory::fromGlobals();
 

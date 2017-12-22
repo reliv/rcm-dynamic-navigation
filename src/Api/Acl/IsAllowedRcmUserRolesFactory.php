@@ -14,8 +14,10 @@ class IsAllowedRcmUserRolesFactory
      * @param ContainerInterface $serviceContainer
      *
      * @return IsAllowedRcmUserRoles
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function __invoke($serviceContainer)
+    public function __invoke(ContainerInterface $serviceContainer)
     {
         return new IsAllowedRcmUserRoles(
             $serviceContainer->get(HasRoleBasedAccess::class)

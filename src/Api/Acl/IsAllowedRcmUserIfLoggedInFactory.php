@@ -14,6 +14,8 @@ class IsAllowedRcmUserIfLoggedInFactory
      * @param ContainerInterface $serviceContainer
      *
      * @return IsAllowedRcmUserIfLoggedIn
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke($serviceContainer)
     {

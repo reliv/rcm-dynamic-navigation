@@ -7,5 +7,5 @@ namespace RcmDynamicNavigation\Api\Acl;
  */
 interface IsAllowedRoles extends IsAllowed
 {
-    const OPTION_PERMITTED_ROLES = 'permittedRoles';
+    const OPTION_PERMITTED_ROLES = 'permissions';
 }

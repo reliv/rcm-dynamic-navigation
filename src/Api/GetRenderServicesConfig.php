@@ -18,7 +18,11 @@ class GetRenderServicesConfig
         $this->servicesConfig = $servicesConfig;
     }
 
-    public function __invoke() {
+    /**
+     * @return array
+     */
+    public function __invoke()
+    {
         return $this->servicesConfig;
     }
 }

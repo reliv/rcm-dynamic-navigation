@@ -13,6 +13,7 @@ class LinksFromData
      * @param array $linksData
      *
      * @return NavLink[]
+     * @throws \Exception
      */
     public static function invoke(
         array $linksData
@@ -20,9 +21,10 @@ class LinksFromData
         $links = [];
 
         foreach ($linksData as $key => $linkData) {
-            if(!is_array($linkData)) {
-                var_dump($key, $linkData);
-                continue;
+            if (!is_array($linkData)) {
+                throw new \Exception(
+                    'Invalid Link Data :' . json_encode($linkData, 0, 10)
+                );
             }
             $links[] = LinkFromData::invoke(
                 $linkData

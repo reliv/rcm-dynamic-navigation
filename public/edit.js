@@ -490,12 +490,6 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
 
         container.find("a").unbind('click');
 
-        container.find('.menu-item').dblclick(
-            function () {
-                self.showEditDialog(jQuery(this))
-            }
-        );
-
         self.addRightClickMenu(links, 0);
 
         setLoading(namespace + '.prepareUi', 1);

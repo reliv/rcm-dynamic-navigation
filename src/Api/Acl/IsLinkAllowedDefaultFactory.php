@@ -14,6 +14,8 @@ class IsLinkAllowedDefaultFactory
      * @param ContainerInterface $serviceContainer
      *
      * @return IsLinkAllowedDefault
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke($serviceContainer)
     {

@@ -14,6 +14,8 @@ class RenderLinksBootstrapFactory
      * @param ContainerInterface $serviceContainer
      *
      * @return RenderLinksBootstrap
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke($serviceContainer)
     {

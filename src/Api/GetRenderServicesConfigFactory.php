@@ -13,6 +13,8 @@ class GetRenderServicesConfigFactory
      * @param ContainerInterface $serviceContainer
      *
      * @return GetRenderServicesConfig
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke($serviceContainer)
     {

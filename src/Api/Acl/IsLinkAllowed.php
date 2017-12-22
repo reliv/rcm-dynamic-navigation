@@ -19,5 +19,5 @@ interface IsLinkAllowed
     public function __invoke(
         ServerRequestInterface $request,
         NavLink $link
-    ):bool;
+    ): bool;
 }

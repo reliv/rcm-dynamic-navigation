@@ -36,17 +36,20 @@ class IsAllowedRcmUserRoles implements IsAllowedRoles
         ServerRequestInterface $request,
         array $options = []
     ): bool {
-        $permittedRoles = Options::get(
+        $permittedRolesString = Options::get(
             $options,
             IsAllowedRoles::OPTION_PERMITTED_ROLES,
-            []
+            ''
         );
+
+        $permittedRoles = explode(',', $permittedRolesString);
 
         if (empty($permittedRoles)) {
             return true;
         }
 
         foreach ($permittedRoles as $role) {
+            // I any role has access, then access is granted
             if ($this->hasRoleBasedAccess->__invoke($request, $role)) {
                 return true;
             }
