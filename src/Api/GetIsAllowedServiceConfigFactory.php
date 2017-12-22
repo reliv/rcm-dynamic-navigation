@@ -13,6 +13,8 @@ class GetIsAllowedServiceConfigFactory
      * @param ContainerInterface $serviceContainer
      *
      * @return GetIsAllowedServiceConfig
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke($serviceContainer)
     {

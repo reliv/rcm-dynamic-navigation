@@ -43,6 +43,8 @@ class NavLink
      * @param string $isAllowedService
      * @param string $renderService
      * @param array  $options
+     *
+     * @throws \Exception
      */
     public function __construct(
         string $id,
@@ -64,6 +66,8 @@ class NavLink
 
         $this->setIsAllowedService($isAllowedService);
         $this->setRenderService($renderService);
+
+        $this->setOptions($options);
     }
 
     /**

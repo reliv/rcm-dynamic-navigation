@@ -61,11 +61,12 @@ class RenderLinksBootstrap implements RenderLinks
 
     /**
      * @param ServerRequestInterface $request
-     * @param NavLink[]              $links Array of NavLinks
+     * @param NavLink[]              $links
      * @param int                    $depth
-     * @param string                 $id    Id to pass to container
+     * @param string                 $id
      *
      * @return string
+     * @throws \Exception
      */
     public function render(
         ServerRequestInterface $request,
@@ -102,11 +103,12 @@ class RenderLinksBootstrap implements RenderLinks
 
     /**
      * @param ServerRequestInterface $request
-     * @param array                  $links Array of NavLinks
+     * @param array                  $links
      * @param int                    $depth
-     * @param string                 $id    Id to pass to container
+     * @param null                   $id
      *
      * @return string
+     * @throws \Exception
      */
     protected function getUl(
         ServerRequestInterface $request,
@@ -136,9 +138,10 @@ class RenderLinksBootstrap implements RenderLinks
     /**
      * @param ServerRequestInterface $request
      * @param NavLink                $link
-     * @param boolean                $depth
+     * @param int                    $depth
      *
      * @return string
+     * @throws \Exception
      */
     protected function getLi(
         ServerRequestInterface $request,

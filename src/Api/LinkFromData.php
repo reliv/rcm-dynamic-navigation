@@ -13,11 +13,11 @@ class LinkFromData
      * @param array $linkData
      *
      * @return NavLink
+     * @throws \Exception
      */
     public static function invoke(
         array $linkData
-    ): NavLink
-    {
+    ): NavLink {
         $linkData = self::buildBcData($linkData);
 
         $subLinksData = Options::get(

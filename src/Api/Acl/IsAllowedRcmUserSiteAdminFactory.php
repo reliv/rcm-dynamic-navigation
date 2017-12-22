@@ -16,6 +16,8 @@ class IsAllowedRcmUserSiteAdminFactory
      * @param ContainerInterface $serviceContainer
      *
      * @return IsAllowedRcmUserSiteAdmin
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke($serviceContainer)
     {

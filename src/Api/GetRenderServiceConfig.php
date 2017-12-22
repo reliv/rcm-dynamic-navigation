@@ -18,6 +18,11 @@ class GetRenderServiceConfig
         $this->servicesConfig = $servicesConfig;
     }
 
+    /**
+     * @param string $serviceAlias
+     *
+     * @return mixed|null
+     */
     public function __invoke(
         string $serviceAlias
     ) {

@@ -35,6 +35,8 @@ class RenderLinkOption implements RenderLink
      *
      * @return string
      * @throws \Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke(
         ServerRequestInterface $request,
@@ -85,13 +87,5 @@ class RenderLinkOption implements RenderLink
             $link,
             $renderServiceOptions
         );
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function getRenderServicesConfig()
-    {
-        return $this->config['rcmPlugin']['RcmDynamicNavigation']['renderServices'];
     }
 }

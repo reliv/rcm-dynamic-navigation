@@ -33,11 +33,14 @@ class IsLinkAllowedDefault implements IsLinkAllowed
      * @param NavLink                $link
      *
      * @return bool
+     * @throws \Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke(
         ServerRequestInterface $request,
         NavLink $link
-    ):bool {
+    ): bool {
         $isAllowedServiceAlias = $link->getIsAllowedService();
 
         $isAllowedServiceConfig = $this->getIsAllowedServiceConfig->__invoke(
