@@ -42,6 +42,10 @@ class IsAllowedRcmUserRoles implements IsAllowedRoles
             ''
         );
 
+        /**
+         * Note: Yes a comma seperated string is very odd compared to a JSON array
+         * but is done so the same old JS editor as "IsAllowedRcmUserRoles" can be used.
+         */
         $permittedRoles = explode(',', $permittedRolesString);
 
         if (empty($permittedRoles)) {
