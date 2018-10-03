@@ -1,9 +1,12 @@
 /**
- * {RcmDynamicNavigationEditCustomDialogsConfig}
- * @type {{'serviceAlias': {function}}}
+ * Returns the editor function for nav items that display based on "user had role" rules.
+ *
+ * @param optionName The current "display if" option name for the nav link
+ * @return {Function}
+ * @constructor
  */
-var RcmDynamicNavigationEditCustomDialogsConfig = {
-    'show-if-has-access-role': function (link, options) {
+var RcmDynamicNavigationAccessRoleEditorFunctionFactory = function (optionName) {
+    return function (link, options) {
         var initialVal = '';
         var showPermissionsDialog = function (permissions, link) {
             var selectedRoles = permissions.split(",");
@@ -21,27 +24,38 @@ var RcmDynamicNavigationEditCustomDialogsConfig = {
                 selected,
                 function (roles) {
                     if (roles.length > 1) {
-                        link.options['show-if-has-access-role'].permissions = roles.join(',');
+                        link.options[optionName].permissions = roles.join(',');
                         return;
                     }
-                    link.options['show-if-has-access-role'].permissions = roles[0];
+                    link.options[optionName].permissions = roles[0];
                 }
             );
         };
 
         if (
-            link.options['show-if-has-access-role'] && link.options['show-if-has-access-role'].permissions
+            link.options[optionName] && link.options[optionName].permissions
         ) {
-            initialVal = link.options['show-if-has-access-role'].permissions;
+            initialVal = link.options[optionName].permissions;
         }
 
-        link.options['show-if-has-access-role'] = {
+        link.options[optionName] = {
             permissions: initialVal
         };
 
         // from rcm-admin
         showPermissionsDialog(initialVal, link);
-    },
+    }
+};
+
+/**
+ * {RcmDynamicNavigationEditCustomDialogsConfig}
+ * @type {{'serviceAlias': {function}}}
+ */
+var RcmDynamicNavigationEditCustomDialogsConfig = {
+    'show-if-has-access-role':
+        RcmDynamicNavigationAccessRoleEditorFunctionFactory('show-if-has-access-role'),
+    'show-if-has-access-role-without-role-inheritance':
+        RcmDynamicNavigationAccessRoleEditorFunctionFactory('show-if-has-access-role-without-role-inheritance')
 };
 
 /**
