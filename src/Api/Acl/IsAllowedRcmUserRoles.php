@@ -49,7 +49,7 @@ class IsAllowedRcmUserRoles implements IsAllowedRoles
         }
 
         foreach ($permittedRoles as $role) {
-            // I any role has access, then access is granted
+            // If any role has access, then access is granted
             if ($this->hasRoleBasedAccess->__invoke($request, $role)) {
                 return true;
             }
