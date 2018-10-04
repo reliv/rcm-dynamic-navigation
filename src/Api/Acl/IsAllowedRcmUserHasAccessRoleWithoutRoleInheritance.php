@@ -6,10 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use RcmDynamicNavigation\Api\Options;
 use RcmUser\Api\Acl\HasRoleBasedAccess;
 
-/**
- * @author James Jervis - https://github.com/jerv13
- */
-class IsAllowedRcmUserRoles implements IsAllowedRoles
+class IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance implements IsAllowedRoles
 {
     /**
      * @var HasRoleBasedAccess
@@ -42,6 +39,10 @@ class IsAllowedRcmUserRoles implements IsAllowedRoles
             ''
         );
 
+        /**
+         * Note: Yes a comma seperated string is very odd compared to a JSON array
+         * but is done so the same old JS editor as "IsAllowedRcmUserRoles" can be used.
+         */
         $permittedRoles = explode(',', $permittedRolesString);
 
         if (empty($permittedRoles)) {
@@ -50,7 +51,7 @@ class IsAllowedRcmUserRoles implements IsAllowedRoles
 
         foreach ($permittedRoles as $role) {
             // If any role has access, then access is granted
-            if ($this->hasRoleBasedAccess->__invoke($request, $role)) {
+            if ($this->hasRoleBasedAccess->__invoke($request, $role, false)) {
                 return true;
             }
         }

@@ -77,6 +77,9 @@ class ModuleConfig
                     \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserRoles::class
                     => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserRolesFactory::class,
 
+                    \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance::class
+                    => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserHasAccessRoleWithoutRoleInheritanceFactory::class,
+
                     \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserSiteAdmin::class
                     => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserSiteAdminFactory::class,
 
@@ -155,8 +158,15 @@ class ModuleConfig
                             'options' => [],
                         ],
                         'show-if-has-access-role' => [
-                            'displayName' => 'Show link if user has access role',
+                            'displayName' => 'Show link if user has access role (with role inheritance)',
                             'service' => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserRoles::class,
+                            'options' => [
+                                'permissions' => '',
+                            ],
+                        ],
+                        'show-if-has-access-role-without-role-inheritance' => [
+                            'displayName' => 'Show link if user has access role (without role inheritance)',
+                            'service' => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance::class,
                             'options' => [
                                 'permissions' => '',
                             ],
