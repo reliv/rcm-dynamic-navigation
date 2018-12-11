@@ -63,7 +63,7 @@ var RcmDynamicNavigationEditCustomDialogsConfig = {
  * @constructor
  */
 var RcmDynamicNavigationEditCustomDialogs = function () {
-    self = this;
+    var self = this;
 
     self.hasDialog = function (serviceAlias) {
         if (!self.config[serviceAlias]) {
