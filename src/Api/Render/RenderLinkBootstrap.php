@@ -50,7 +50,7 @@ class RenderLinkBootstrap implements RenderLink
         $html = "\n" . '<a href="' . $href . '"';
 
         if ($link->hasLinks()) {
-            $html .= 'class="dropdown-toggle'
+            $html .= ' class="dropdown-toggle'
                 . ' ' . self::LINK_CLASS . '"'
                 . ' data-toggle="dropdown" role="button" aria-expanded="false"';
         }
