@@ -83,9 +83,7 @@ class RenderLinksBootstrap implements RenderLinks
                     class="navbar-toggle collapsed"
                     data-toggle="collapse"
                     data-target="#' . $id . '"
-                    aria-expanded="false"
-                    aria-controls="navbar"
-                    >
+                    aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
