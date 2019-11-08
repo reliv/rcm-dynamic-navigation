@@ -5,7 +5,6 @@ namespace RcmDynamicNavigation\Api\Acl;
 use Psr\Container\ContainerInterface;
 use Rcm\Acl\GetGroupNamesByUserInterface;
 use Rcm\RequestContext\RequestContext;
-use RcmUser\Api\Acl\HasRoleBasedAccess;
 use RcmUser\Api\Authentication\GetIdentity;
 
 class IsAllowedRcmUserHasAccessRoleWithoutRoleInheritanceFactory
