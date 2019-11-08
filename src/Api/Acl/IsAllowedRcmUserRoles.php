@@ -4,7 +4,6 @@ namespace RcmDynamicNavigation\Api\Acl;
 
 use Psr\Http\Message\ServerRequestInterface;
 use RcmDynamicNavigation\Api\Options;
-use RcmUser\Api\Acl\HasRoleBasedAccess;
 
 /**
  * @deprecated use IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance instead

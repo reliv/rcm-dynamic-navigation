@@ -12,7 +12,6 @@ use Rcm\Acl\NotAllowedException;
 use Rcm\Acl2\SecurityPropertyConstants;
 use Rcm\RequestContext\RequestContext;
 use RcmDynamicNavigation\Api\Options;
-use RcmUser\Api\Acl\HasRoleBasedAccess;
 use RcmUser\Api\Authentication\GetIdentity;
 
 class IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance implements IsAllowedRoles
