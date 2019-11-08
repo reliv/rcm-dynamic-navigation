@@ -3,7 +3,6 @@
 namespace RcmDynamicNavigation\Controller;
 
 use Psr\Container\ContainerInterface;
-use RcmDynamicNavigation\Api\Acl\IsAllowedAdmin;
 use RcmDynamicNavigation\Api\Acl\IsLinkAllowed;
 use Zend\Mvc\Controller\ControllerManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
