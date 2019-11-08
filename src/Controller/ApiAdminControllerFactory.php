@@ -3,6 +3,7 @@
 namespace RcmDynamicNavigation\Controller;
 
 use Psr\Container\ContainerInterface;
+use Rcm\RequestContext\RequestContext;
 use RcmDynamicNavigation\Api\Acl\IsAllowedAdmin;
 use RcmDynamicNavigation\Api\GetIsAllowedServicesConfig;
 use RcmDynamicNavigation\Api\GetRenderServicesConfig;
@@ -20,7 +21,7 @@ class ApiAdminControllerFactory
     public function __invoke($serviceContainer)
     {
         return new ApiAdminController(
-            $serviceContainer->get(IsAllowedAdmin::class),
+            $serviceContainer->get(RequestContext::class),
             $serviceContainer->get(GetIsAllowedServicesConfig::class),
             $serviceContainer->get(GetRenderServicesConfig::class)
         );

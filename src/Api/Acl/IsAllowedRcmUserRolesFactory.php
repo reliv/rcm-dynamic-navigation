@@ -20,7 +20,7 @@ class IsAllowedRcmUserRolesFactory
     public function __invoke(ContainerInterface $serviceContainer)
     {
         return new IsAllowedRcmUserRoles(
-            $serviceContainer->get(HasRoleBasedAccess::class)
+            $serviceContainer->get(IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance::class)
         );
     }
 }

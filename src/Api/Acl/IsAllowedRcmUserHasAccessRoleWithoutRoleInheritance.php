@@ -2,29 +2,38 @@
 
 namespace RcmDynamicNavigation\Api\Acl;
 
+use http\Env\Request;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Rcm\Acl\AclActions;
+use Rcm\Acl\AssertIsAllowed;
+use Rcm\Acl\GetGroupNamesByUserInterface;
+use Rcm\Acl\NotAllowedException;
+use Rcm\Acl2\SecurityPropertyConstants;
+use Rcm\RequestContext\RequestContext;
 use RcmDynamicNavigation\Api\Options;
 use RcmUser\Api\Acl\HasRoleBasedAccess;
+use RcmUser\Api\Authentication\GetIdentity;
 
 class IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance implements IsAllowedRoles
 {
-    /**
-     * @var HasRoleBasedAccess
-     */
-    protected $hasRoleBasedAccess;
+    protected $getIdentity;
+    protected $requestContext;
+    protected $getGroupNamesByUser;
 
-    /**
-     * @param HasRoleBasedAccess $hasRoleBasedAccess
-     */
     public function __construct(
-        HasRoleBasedAccess $hasRoleBasedAccess
+        GetIdentity $getIdentity,
+        ContainerInterface $requestContext,
+        GetGroupNamesByUserInterface $getGroupNamesByUser
     ) {
-        $this->hasRoleBasedAccess = $hasRoleBasedAccess;
+        $this->getIdentity = $getIdentity;
+        $this->requestContext = $requestContext;
+        $this->getGroupNamesByUser = $getGroupNamesByUser;
     }
 
     /**
      * @param ServerRequestInterface $request
-     * @param array                  $options
+     * @param array $options
      *
      * @return bool
      * @throws \Exception
@@ -43,19 +52,32 @@ class IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance implements IsAllowedRo
          * Note: Yes a comma seperated string is very odd compared to a JSON array
          * but is done so the same old JS editor as "IsAllowedRcmUserRoles" can be used.
          */
-        $permittedRoles = explode(',', $permittedRolesString);
+        $readAccessGroups = explode(',', $permittedRolesString);
 
-        if (empty($permittedRoles)) {
-            return true;
+        if (empty($readAccessGroups)) {
+            return true;//Apperently if no roles are selected, that means everyone has access
         }
 
-        foreach ($permittedRoles as $role) {
-            // If any role has access, then access is granted
-            if ($this->hasRoleBasedAccess->__invoke($request, $role, false)) {
-                return true;
+        $currentUser = $this->getIdentity->__invoke($request);
+        $currentUserGroups = $this->getGroupNamesByUser->__invoke($currentUser);
+        foreach ($readAccessGroups as $readAccessGroup) {
+            if (in_array($readAccessGroup, $currentUserGroups)) {
+                return true;//If they have RBAC access, let them see it.
+                break;
             }
         }
 
-        return false;
+        /**
+         * @var AssertIsAllowed $assertIsAllowed
+         */
+        $assertIsAllowed = $this->requestContext->get(AssertIsAllowed::class);
+
+        try {
+            $assertIsAllowed->__invoke(AclActions::READ, ['type' => SecurityPropertyConstants::TYPE_ADMIN_TOOL]);
+
+            return true; //If they don't have RBAC access but still have admin tools access, let them see it
+        } catch (NotAllowedException $e) {
+            return false;
+        }
     }
 }

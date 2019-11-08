@@ -7,27 +7,26 @@ use RcmDynamicNavigation\Api\Options;
 use RcmUser\Api\Acl\HasRoleBasedAccess;
 
 /**
- * @author James Jervis - https://github.com/jerv13
+ * @deprecated use IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance instead
+ *
+ * Class IsAllowedRcmUserRoles
+ * @package RcmDynamicNavigation\Api\Acl
  */
 class IsAllowedRcmUserRoles implements IsAllowedRoles
 {
-    /**
-     * @var HasRoleBasedAccess
-     */
-    protected $hasRoleBasedAccess;
+    protected $isAllowedWithoutInheritance;
 
-    /**
-     * @param HasRoleBasedAccess $hasRoleBasedAccess
-     */
     public function __construct(
-        HasRoleBasedAccess $hasRoleBasedAccess
+        IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance $isAllowedWithoutInheritance
     ) {
-        $this->hasRoleBasedAccess = $hasRoleBasedAccess;
+        $this->isAllowedWithoutInheritance = $isAllowedWithoutInheritance;
     }
 
     /**
+     * @deprecated use IsAllowedRcmUserHasAccessRoleWithoutRoleInheritance instead
+     *
      * @param ServerRequestInterface $request
-     * @param array                  $options
+     * @param array $options
      *
      * @return bool
      * @throws \Exception
@@ -42,19 +41,28 @@ class IsAllowedRcmUserRoles implements IsAllowedRoles
             ''
         );
 
-        $permittedRoles = explode(',', $permittedRolesString);
+        /**
+         * Note: Yes a comma seperated string is very odd compared to a JSON array
+         * but is done so the same old JS editor as "IsAllowedRcmUserRoles" can be used.
+         */
+        $readAccessGroups = explode(',', $permittedRolesString);
 
-        if (empty($permittedRoles)) {
-            return true;
+        if (empty($readAccessGroups)) {
+            return true;//Apperently if no roles are selected, that means everyone has access
         }
 
-        foreach ($permittedRoles as $role) {
-            // If any role has access, then access is granted
-            if ($this->hasRoleBasedAccess->__invoke($request, $role)) {
-                return true;
-            }
+        //BC inheritance code that should be removed eventually. Should not really be in open source.
+        if (in_array('distributor', $readAccessGroups)) {
+            $readAccessGroups[] = 'employee';
+        }
+        if (in_array('customer', $readAccessGroups)) {
+            $readAccessGroups[] = 'employee';
+            $readAccessGroups[] = 'distributor';
         }
 
-        return false;
+        return $this->isAllowedWithoutInheritance->__invoke(
+            $request,
+            [IsAllowedRoles::OPTION_PERMITTED_ROLES => implode(',', array_unique($readAccessGroups))]
+        );
     }
 }

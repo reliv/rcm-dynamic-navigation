@@ -64,10 +64,7 @@ class ModuleConfig
                 'factories' => [
                     \RcmDynamicNavigation\Api\Acl\IsAllowedAny::class
                     => \RcmDynamicNavigation\Api\Acl\IsAllowedAnyFactory::class,
-
-                    \RcmDynamicNavigation\Api\Acl\IsAllowedAdmin::class
-                    => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserSiteAdminFactory::class,
-
+                    
                     \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserIfLoggedIn::class
                     => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserIfLoggedInFactory::class,
 
@@ -158,7 +155,7 @@ class ModuleConfig
                             'options' => [],
                         ],
                         'show-if-has-access-role' => [
-                            'displayName' => 'Show link if user has access role (with role inheritance)',
+                            'displayName' => 'Show link if user has access role (with role inheritance) [DEPRECATED]',
                             'service' => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserRoles::class,
                             'options' => [
                                 'permissions' => '',

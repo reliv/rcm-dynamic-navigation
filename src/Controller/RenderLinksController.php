@@ -2,9 +2,14 @@
 
 namespace RcmDynamicNavigation\Controller;
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use RcmDynamicNavigation\Api\Acl\IsAllowedAdmin;
+use Rcm\Acl\AclActions;
+use Rcm\Acl\AssertIsAllowed;
+use Rcm\Acl\NotAllowedException;
+use Rcm\Acl2\SecurityPropertyConstants;
+use RcmDynamicNavigation\Api\Acl\requestContext;
 use RcmDynamicNavigation\Api\LinksFromData;
 use RcmDynamicNavigation\Api\Render\RenderLinks;
 use Zend\Diactoros\Response\JsonResponse;
@@ -14,18 +19,14 @@ use Zend\Diactoros\Response\JsonResponse;
  */
 class RenderLinksController
 {
-    protected $isAllowedAdmin;
+    protected $requestContext;
     protected $renderLinks;
 
-    /**
-     * @param IsAllowedAdmin $isAllowedAdmin
-     * @param RenderLinks    $renderLinks
-     */
     public function __construct(
-        IsAllowedAdmin $isAllowedAdmin,
+        ContainerInterface $requestContext,
         RenderLinks $renderLinks
     ) {
-        $this->isAllowedAdmin = $isAllowedAdmin;
+        $this->requestContext = $requestContext;
 
         $this->renderLinks = $renderLinks;
     }
@@ -34,8 +35,8 @@ class RenderLinksController
      * __invoke
      *
      * @param ServerRequestInterface $request
-     * @param ResponseInterface      $response
-     * @param callable|null          $next
+     * @param ResponseInterface $response
+     * @param callable|null $next
      *
      * @return mixed
      */
@@ -44,8 +45,15 @@ class RenderLinksController
         ResponseInterface $response,
         callable $next = null
     ) {
-        if (!$this->isAllowedAdmin->__invoke($request, [])) {
-            new JsonResponse(
+        /**
+         * @var AssertIsAllowed $assertIsAllowed
+         */
+        $assertIsAllowed = $this->requestContext->get(AssertIsAllowed::class);
+
+        try {
+            $assertIsAllowed->__invoke(AclActions::READ, ['type' => SecurityPropertyConstants::TYPE_ADMIN_TOOL]);
+        } catch (NotAllowedException $e) {
+            return new JsonResponse(
                 null,
                 401
             );

@@ -2,9 +2,14 @@
 
 namespace RcmDynamicNavigation\Controller;
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use RcmDynamicNavigation\Api\Acl\IsAllowedAdmin;
+use Rcm\Acl\AclActions;
+use Rcm\Acl\AssertIsAllowed;
+use Rcm\Acl\NotAllowedException;
+use Rcm\Acl2\SecurityPropertyConstants;
+use RcmDynamicNavigation\Api\Acl\requestContext;
 use RcmDynamicNavigation\Api\GetIsAllowedServicesConfig;
 use RcmDynamicNavigation\Api\GetRenderServicesConfig;
 use Zend\Diactoros\Response\JsonResponse;
@@ -14,21 +19,16 @@ use Zend\Diactoros\Response\JsonResponse;
  */
 class ApiAdminController
 {
-    protected $isAllowedAdmin;
+    protected $requestContext;
     protected $getRenderServicesConfig;
     protected $getIsAllowedServicesConfig;
 
-    /**
-     * @param IsAllowedAdmin             $isAllowedAdmin
-     * @param GetIsAllowedServicesConfig $getIsAllowedServicesConfig
-     * @param GetRenderServicesConfig    $getRenderServicesConfig
-     */
     public function __construct(
-        IsAllowedAdmin $isAllowedAdmin,
+        ContainerInterface $requestContext,
         GetIsAllowedServicesConfig $getIsAllowedServicesConfig,
         GetRenderServicesConfig $getRenderServicesConfig
     ) {
-        $this->isAllowedAdmin = $isAllowedAdmin;
+        $this->requestContext = $requestContext;
 
         $this->getIsAllowedServicesConfig = $getIsAllowedServicesConfig;
         $this->getRenderServicesConfig = $getRenderServicesConfig;
@@ -38,8 +38,8 @@ class ApiAdminController
      * __invoke
      *
      * @param ServerRequestInterface $request
-     * @param ResponseInterface      $response
-     * @param callable|null          $next
+     * @param ResponseInterface $response
+     * @param callable|null $next
      *
      * @return mixed
      */
@@ -48,8 +48,15 @@ class ApiAdminController
         ResponseInterface $response,
         callable $next = null
     ) {
-        if (!$this->isAllowedAdmin->__invoke($request, [])) {
-            new JsonResponse(
+        /**
+         * @var AssertIsAllowed $assertIsAllowed
+         */
+        $assertIsAllowed = $this->requestContext->get(AssertIsAllowed::class);
+
+        try {
+            $assertIsAllowed->__invoke(AclActions::READ, ['type' => SecurityPropertyConstants::TYPE_ADMIN_TOOL]);
+        } catch (NotAllowedException $e) {
+            return new JsonResponse(
                 null,
                 401
             );
