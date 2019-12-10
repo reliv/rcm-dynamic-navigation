@@ -20,21 +20,21 @@ use Zend\Expressive\Helper\BodyParams\BodyParamsMiddleware;
 class ModuleConfig
 {
     protected $defaultInstanceConfig
-        = [
-            "links" => [
-                0 => [
-                    'id' => '',
-                    'display' => 'Untitled Link',
-                    'href' => "#",
-                    'class' => '',
-                    'target' => '',
-                    'links' => [],
-                    'renderService' => 'default',
-                    'isAllowedService' => 'default',
-                    'options' => [],
-                ],
+    = [
+        "links" => [
+            0 => [
+                'id' => '',
+                'display' => 'Untitled Link',
+                'href' => "#",
+                'class' => '',
+                'target' => '',
+                'links' => [],
+                'renderService' => 'default',
+                'isAllowedService' => 'default',
+                'options' => [],
             ],
-        ];
+        ],
+    ];
 
     /**
      * __invoke
@@ -64,7 +64,7 @@ class ModuleConfig
                 'factories' => [
                     \RcmDynamicNavigation\Api\Acl\IsAllowedAny::class
                     => \RcmDynamicNavigation\Api\Acl\IsAllowedAnyFactory::class,
-                    
+
                     \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserIfLoggedIn::class
                     => \RcmDynamicNavigation\Api\Acl\IsAllowedRcmUserIfLoggedInFactory::class,
 
@@ -124,7 +124,10 @@ class ModuleConfig
                     => \RcmDynamicNavigation\Api\GetRenderServiceConfigOptionFactory::class,
 
                     GetRenderServicesConfig::class
-                    => GetRenderServicesConfigFactory::class
+                    => GetRenderServicesConfigFactory::class,
+
+                    \RcmDynamicNavigation\Api\IsPwsOwner::class
+                    => \RcmDynamicNavigation\Api\IsPwsOwnerFactory::class
                 ],
             ],
 
@@ -168,6 +171,11 @@ class ModuleConfig
                                 'permissions' => '',
                             ],
                         ],
+                        'show-if-is-pws-owner' => [
+                            'displayName' => 'Show link if user is the owner of the current personal website',
+                            'service' => \RcmDynamicNavigation\Api\IsPwsOwner::class,
+                            'options' => []
+                        ]
                     ],
                     'renderServices' => [
                         'default' => [
