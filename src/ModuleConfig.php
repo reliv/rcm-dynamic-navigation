@@ -125,9 +125,6 @@ class ModuleConfig
 
                     GetRenderServicesConfig::class
                     => GetRenderServicesConfigFactory::class,
-
-                    \RcmDynamicNavigation\Api\IsPwsOwner::class
-                    => \RcmDynamicNavigation\Api\IsPwsOwnerFactory::class
                 ],
             ],
 
@@ -171,11 +168,6 @@ class ModuleConfig
                                 'permissions' => '',
                             ],
                         ],
-                        'show-if-is-pws-owner' => [
-                            'displayName' => 'Show link if user is the owner of the current personal website',
-                            'service' => \RcmDynamicNavigation\Api\IsPwsOwner::class,
-                            'options' => []
-                        ]
                     ],
                     'renderServices' => [
                         'default' => [
