@@ -625,7 +625,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         jQuery.extend(
             adminMenuItems,
             editLinkPropertiesMenuItem,
-            { separator: '-' },
+            {separator: '-'},
             editLinkPropertiesMenuItem,
             createNewLinkMenuItem,
             createSubMenuItem,
