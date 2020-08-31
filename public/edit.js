@@ -192,6 +192,11 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
                 link.options = {};
             }
 
+            if (Array.isArray(link.options)) {
+                // Fixes a issue where Chrome attatches props to an array and then later "JSON.stringify" ignores them because its an array not an object.
+                link.options = {}
+            }
+
             if (link.links && link.links.length > 0) {
                 link.links = prepareBc(link.links)
             }
@@ -620,7 +625,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
         jQuery.extend(
             adminMenuItems,
             editLinkPropertiesMenuItem,
-            {separator: '-'},
+            { separator: '-' },
             editLinkPropertiesMenuItem,
             createNewLinkMenuItem,
             createSubMenuItem,
