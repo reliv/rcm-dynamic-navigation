@@ -194,7 +194,7 @@ var RcmDynamicNavigationEdit = function (instanceId, container, pluginHandler) {
 
             if (Array.isArray(link.options)) {
                 /*
-                 * Fixes an issue where Chrome attatches props to an empty array and then later
+                 * Fixes an issue where Chrome attaches props to an empty array and then later
                  * "JSON.stringify" ignores them because its an array not an object. This may be
                  * originally from PHP treating an empty object as "[]"
                  */
